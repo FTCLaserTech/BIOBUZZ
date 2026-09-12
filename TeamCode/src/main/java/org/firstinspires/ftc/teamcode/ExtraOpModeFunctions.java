@@ -1,35 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
-//import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.SECONDS;
-import static java.lang.Math.abs;
-
-import android.os.Environment;
-
-import androidx.annotation.NonNull;
-
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import dev.nextftc.control.feedforward.SimpleFeedforward;
 import dev.nextftc.control.feedback.PIDController;
 
 public class ExtraOpModeFunctions
 {
-    public LinearOpMode localLop = null;
     public HardwareMap hm = null;
 
     public enum RobotStartPosition {STRAIGHT, LEFT, RIGHT};
@@ -59,18 +43,18 @@ public class ExtraOpModeFunctions
         launcher1 = hardwareMap.get(DcMotorEx.class, "launcher1");
         launcher1.setDirection(DcMotorEx.Direction.FORWARD);
         launcher1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        //launcher1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launcher1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        launcher1.setPower(0.0);
-        //launcher1.setVelocity(0.0);
+        launcher1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launcher1.setVelocity(0.0);
+        //launcher1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //launcher1.setPower(0.0);
 
         launcher2 = hardwareMap.get(DcMotorEx.class, "launcher2");
         launcher2.setDirection(DcMotorEx.Direction.REVERSE);
         launcher2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        //launcher2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launcher2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        launcher2.setPower(0.0);
-        //launcher2.setVelocity(0.0);
+        launcher2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launcher2.setVelocity(0.0);
+        //launcher2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //launcher2.setPower(0.0);
 
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         intake.setDirection(DcMotorEx.Direction.FORWARD);
@@ -155,16 +139,17 @@ public class ExtraOpModeFunctions
 
     public void setLauncher(double launcherSpeed)
     {
-
+        /*
         double power = launcherController.calculate(new KineticState(
                 launcher1.getCurrentPosition(),
                 launcher1.getVelocity()
         ));
         launcher1.setPower(power);
         launcher2.setPower(power);
-        localLop.telemetry.addData("Launcher velocity target: ", launcherSpeed);
-        localLop.telemetry.addData("Launcher power set: ", power);
+        */
 
+        launcher1.setVelocity(launcherSpeed);
+        launcher2.setVelocity(launcherSpeed);
     }
 
     public double getLauncherSpeed()
@@ -270,15 +255,6 @@ public class ExtraOpModeFunctions
 
     private double chYawInitial = 0.0;
 
-    public void safeWaitSeconds(double time)
-    {
-        ElapsedTime timer = new ElapsedTime(SECONDS);
-        timer.reset();
-        while (!localLop.isStopRequested() && timer.time() < time)
-        {
-            ;
-        }
-    }
     public double angleToSpeed(double angle)
     {
         // fitting a parabola through 3 points
