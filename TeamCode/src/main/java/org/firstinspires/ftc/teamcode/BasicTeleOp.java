@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
+
+import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
+import com.pedropathing.follower.ManualDrive;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -34,7 +38,7 @@ public class BasicTeleOp extends OpMode
     double speedMultiplier = 1.0;
     double rotationMultiplier = 1.0;
 
-
+    double launcherVelocity = 0.0;
 
 
     /*
@@ -92,17 +96,24 @@ public class BasicTeleOp extends OpMode
     @Override
     public void loop()
     {
-        double forward = -gamepad1.left_stick_y;
-        double lateral = gamepad1.left_stick_x;
-        double turn = gamepad1.right_stick_x;
 
-        //stickSideways = gamepad1.left_stick_x * speedMultiplier;
-        //stickForward = -gamepad1.left_stick_y * speedMultiplier;
-        //stickSidewaysRotated = (stickSideways * cos(-adjustedHeading)) - (stickForward * Math.sin(-adjustedHeading));
-        //stickForwardRotated = (stickSideways * Math.sin(-adjustedHeading)) + (stickForward * cos(-adjustedHeading));
+        /*
+        stickSideways = gamepad1.left_stick_x * speedMultiplier;
+        stickForward = -gamepad1.left_stick_y * speedMultiplier;
+        stickSidewaysRotated = (stickSideways * cos(-adjustedHeading)) - (stickForward * Math.sin(-adjustedHeading));
+        stickForwardRotated = (stickSideways * Math.sin(-adjustedHeading)) + (stickForward * cos(-adjustedHeading));
+        */
 
-        //follower.manual(forward, lateral, turn);
-        //follower.update();
+        DrivePowers powers = ManualDrive.fieldCentric(
+                -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
+                gamepad1.right_stick_x,
+                follower.pose().heading()
+        );
+        follower.manual(powers);
+        follower.update();
+
+
 
         /*
         if(manualDrive)
@@ -115,9 +126,22 @@ public class BasicTeleOp extends OpMode
                     -(gamepad1.right_stick_x * rotationMultiplier)
             ));
         }
+        */
+        if (gamepad1.dpadDownWasPressed())
+        {
+            launcherVelocity = launcherVelocity - 25.0;
+            if (launcherVelocity < 0.0 )
+            {
+                launcherVelocity = 0.0;
+            }
 
+        }
+        if (gamepad1.dpadUpWasPressed())
+        {
+            launcherVelocity = launcherVelocity + 25.0;
+        }
 
- */
+        extras.setLauncher(launcherVelocity);
 
         if (gamepad1.right_bumper)
         {
@@ -159,8 +183,8 @@ public class BasicTeleOp extends OpMode
         }
 
         telemetry.addData("Elevator position", extras.elevator.getCurrentPosition());
+        telemetry.addData("launchervelocity", launcherVelocity);
         telemetry.update();
-
     }
 
 
