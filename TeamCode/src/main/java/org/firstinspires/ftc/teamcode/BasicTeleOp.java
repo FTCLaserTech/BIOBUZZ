@@ -8,17 +8,33 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import static java.lang.Math.cos;
+
+import dev.nextftc.control.geometry.PoseVelocity2d;
+import dev.nextftc.control.geometry.Vector2d;
+
 
 @TeleOp(group = "A")
 public class BasicTeleOp extends OpMode
 {
     private ElapsedTime runtime = new ElapsedTime();
     private Follower follower;
-    ExtraOpModeFunctions extras = new ExtraOpModeFunctions(hardwareMap);
+    private ExtraOpModeFunctions extras;
 
     public static double headingScaler = 3.0;
     public static double positionScalerAim = 10.0;
     public static double positionScalerRange = 1.0;
+    int IMUReset = 0;
+    double stickForward;
+    double stickSideways;
+    double stickForwardRotated;
+    double stickSidewaysRotated;
+    double imuHeading = 0.0;
+    double adjustedHeading = 0.0;
+    double speedMultiplier = 1.0;
+    double rotationMultiplier = 1.0;
+
+
 
 
     /*
@@ -27,9 +43,11 @@ public class BasicTeleOp extends OpMode
     @Override
     public void init()
     {
-        telemetry.addData("Status", "Initializing");
+        //telemetry.addData("Status", "Initializing");
 
         follower = Constants.create(hardwareMap);
+        extras = new ExtraOpModeFunctions(hardwareMap);
+
 
         /*
         extras.teamColor = extras.readTeamColor();
@@ -47,7 +65,7 @@ public class BasicTeleOp extends OpMode
         */
 
         // Tell the driver that initialization is complete.
-        telemetry.addData("Status", "Initialized");
+        //telemetry.addData("Status", "Initialized");
     }
 
     /*
@@ -78,9 +96,73 @@ public class BasicTeleOp extends OpMode
         double lateral = gamepad1.left_stick_x;
         double turn = gamepad1.right_stick_x;
 
-        follower.manual(forward, lateral, turn);
-        follower.update();
+        //stickSideways = gamepad1.left_stick_x * speedMultiplier;
+        //stickForward = -gamepad1.left_stick_y * speedMultiplier;
+        //stickSidewaysRotated = (stickSideways * cos(-adjustedHeading)) - (stickForward * Math.sin(-adjustedHeading));
+        //stickForwardRotated = (stickSideways * Math.sin(-adjustedHeading)) + (stickForward * cos(-adjustedHeading));
+
+        //follower.manual(forward, lateral, turn);
+        //follower.update();
+
+        /*
+        if(manualDrive)
+        {
+            drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            stickSidewaysRotated,
+                            stickForwardRotated
+                    ),
+                    -(gamepad1.right_stick_x * rotationMultiplier)
+            ));
+        }
+
+
+ */
+
+        if (gamepad1.right_bumper)
+        {
+            extras.setBallStop(ExtraOpModeFunctions.BallStopStates.OFF);
+            extras.setIntake(ExtraOpModeFunctions.IntakeStates.REVERSE);
+        }
+        else if (gamepad1.right_trigger > 0)
+        {
+
+            extras.setIntake(ExtraOpModeFunctions.IntakeStates.FORWARD);
+            extras.setBallStop(ExtraOpModeFunctions.BallStopStates.OFF);
+
+        }
+        else if (gamepad1.left_trigger > 0)
+        {
+            extras.setIntake(ExtraOpModeFunctions.IntakeStates.FORWARD);
+            extras.setBallStop(ExtraOpModeFunctions.BallStopStates.ON);
+
+        }
+        else
+        {
+            extras.setIntake(ExtraOpModeFunctions.IntakeStates.OFF);
+        }
+        if (gamepad1.aWasPressed())
+        {
+            extras.elevatorup();
+        }
+        if (gamepad1.bWasPressed())
+        {
+            extras.elevatordown();
+        }
+        if(gamepad1.y)
+        {
+            extras.clawopen();
+        }
+        else
+        {
+            extras.clawclose();
+        }
+
+        telemetry.addData("Elevator position", extras.elevator.getCurrentPosition());
+        telemetry.update();
+
     }
+
 
     /*
      * Code to run ONCE after the driver hits STOP
@@ -89,7 +171,8 @@ public class BasicTeleOp extends OpMode
     public void stop()
     {
         ;
-    }
+    }}
 
-}
+
+
 
