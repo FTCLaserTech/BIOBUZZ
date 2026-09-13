@@ -96,14 +96,9 @@ public class BasicTeleOp extends OpMode
     @Override
     public void loop()
     {
-
         /*
-        stickSideways = gamepad1.left_stick_x * speedMultiplier;
-        stickForward = -gamepad1.left_stick_y * speedMultiplier;
-        stickSidewaysRotated = (stickSideways * cos(-adjustedHeading)) - (stickForward * Math.sin(-adjustedHeading));
-        stickForwardRotated = (stickSideways * Math.sin(-adjustedHeading)) + (stickForward * cos(-adjustedHeading));
+        Drive
         */
-
         DrivePowers powers = ManualDrive.fieldCentric(
                 -gamepad1.left_stick_y,
                 -gamepad1.left_stick_x,
@@ -113,19 +108,8 @@ public class BasicTeleOp extends OpMode
         follower.manual(powers);
         follower.update();
 
-
-
         /*
-        if(manualDrive)
-        {
-            drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            stickSidewaysRotated,
-                            stickForwardRotated
-                    ),
-                    -(gamepad1.right_stick_x * rotationMultiplier)
-            ));
-        }
+        Launcher
         */
         if (gamepad1.dpadDownWasPressed())
         {
@@ -141,8 +125,24 @@ public class BasicTeleOp extends OpMode
             launcherVelocity = launcherVelocity + 25.0;
         }
 
+        // launcher  function
+        if (gamepad1.xWasPressed())
+        {
+            if(launcherVelocity == 1850.0)
+            {
+                launcherVelocity = 0.0;
+            }
+            else
+            {
+                launcherVelocity = 1850.0;
+            }
+        }
+
         extras.setLauncher(launcherVelocity);
 
+        /*
+        Intake and Ballstop
+        */
         if (gamepad1.right_bumper)
         {
             extras.setBallStop(ExtraOpModeFunctions.BallStopStates.OFF);
@@ -165,6 +165,10 @@ public class BasicTeleOp extends OpMode
         {
             extras.setIntake(ExtraOpModeFunctions.IntakeStates.OFF);
         }
+
+        /*
+        Elevator
+        */
         if (gamepad1.aWasPressed())
         {
             extras.elevatorup();
@@ -173,6 +177,11 @@ public class BasicTeleOp extends OpMode
         {
             extras.elevatordown();
         }
+
+        /*
+        claw
+        */
+
         if(gamepad1.y)
         {
             extras.clawopen();
@@ -181,6 +190,9 @@ public class BasicTeleOp extends OpMode
         {
             extras.clawclose();
         }
+
+        //telemetry.addData("Launcher On: ", launcherOn);
+
 
         telemetry.addData("Elevator position", extras.elevator.getCurrentPosition());
         telemetry.addData("launchervelocity", launcherVelocity);
