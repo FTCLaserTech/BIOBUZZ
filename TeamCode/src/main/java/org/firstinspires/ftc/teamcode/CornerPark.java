@@ -25,7 +25,7 @@ public class CornerPark extends OpMode
     // Poses
     private final Pose startPose = poseFactory.of(24, 24, 0);
     private final Pose scorePose = poseFactory.of(48, 48, 90);
-    private final Pose parkPose = poseFactory.of(72, 48, 90);
+    private final Pose parkPose = poseFactory.of(72, 48, 0);
 
     // Path methods
     private Path startToScore() {

@@ -39,6 +39,7 @@ public class BasicTeleOp extends OpMode
     double rotationMultiplier = 1.0;
 
     double launcherVelocity = 0.0;
+    double storedlauncherVelocity = 1950.0;
 
 
     /*
@@ -102,7 +103,7 @@ public class BasicTeleOp extends OpMode
         DrivePowers powers = ManualDrive.fieldCentric(
                 -gamepad1.left_stick_y,
                 -gamepad1.left_stick_x,
-                gamepad1.right_stick_x,
+                -gamepad1.right_stick_x,
                 follower.pose().heading()
         );
         follower.manual(powers);
@@ -128,13 +129,14 @@ public class BasicTeleOp extends OpMode
         // launcher  function
         if (gamepad1.xWasPressed())
         {
-            if(launcherVelocity == 1850.0)
+            if(launcherVelocity == 0.0)
             {
-                launcherVelocity = 0.0;
+                launcherVelocity = storedlauncherVelocity;
             }
             else
             {
-                launcherVelocity = 1850.0;
+                storedlauncherVelocity = launcherVelocity;
+                launcherVelocity = 0.0;
             }
         }
 

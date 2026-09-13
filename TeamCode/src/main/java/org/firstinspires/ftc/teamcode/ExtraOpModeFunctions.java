@@ -145,12 +145,12 @@ public class ExtraOpModeFunctions
 
     private void ballStopOn()
     {
-        ballStop.setPosition(1.0);
+        ballStop.setPosition(0.525);
     }
 
     private void ballStopOff()
     {
-        ballStop.setPosition(0.3);
+        ballStop.setPosition(0.0);
     }
 
     public void elevatorup()
