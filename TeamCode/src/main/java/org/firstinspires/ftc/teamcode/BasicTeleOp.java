@@ -39,7 +39,7 @@ public class BasicTeleOp extends OpMode
     double rotationMultiplier = 1.0;
 
     double launcherVelocity = 0.0;
-    double storedlauncherVelocity = 1950.0;
+    double storedlauncherVelocity = 2600.0;
 
 
     /*
@@ -153,7 +153,7 @@ public class BasicTeleOp extends OpMode
         else if (gamepad1.right_trigger > 0)
         {
 
-            extras.setIntake(ExtraOpModeFunctions.IntakeStates.FORWARD);
+            extras.setIntake(ExtraOpModeFunctions.IntakeStates.FORWARD_SLOW);
             extras.setBallStop(ExtraOpModeFunctions.BallStopStates.OFF);
 
         }
@@ -196,8 +196,10 @@ public class BasicTeleOp extends OpMode
         //telemetry.addData("Launcher On: ", launcherOn);
 
 
-        telemetry.addData("Elevator position", extras.elevator.getCurrentPosition());
-        telemetry.addData("launchervelocity", launcherVelocity);
+        telemetry.addData("Elevator position: ", extras.elevator.getCurrentPosition());
+        telemetry.addData("launcher target velocity: ", launcherVelocity);
+        telemetry.addData("launcher1 velocity: ", extras.launcher1.getVelocity());
+        telemetry.addData("launcher2 velocity: ", extras.launcher2.getVelocity());
         telemetry.update();
     }
 

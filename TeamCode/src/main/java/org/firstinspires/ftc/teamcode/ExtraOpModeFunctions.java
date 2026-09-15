@@ -82,7 +82,7 @@ public class ExtraOpModeFunctions
 
     }
 
-    public enum IntakeStates {NA, OFF, FORWARD, REVERSE};
+    public enum IntakeStates {NA, OFF, FORWARD, FORWARD_SLOW, REVERSE};
     IntakeStates currentIntakeState = IntakeStates.NA;
     public void setIntake(IntakeStates intakeState)
     {
@@ -100,6 +100,14 @@ public class ExtraOpModeFunctions
                 if(intakeState != currentIntakeState)
                 {
                     intake.setPower(1.0);
+                    currentIntakeState = intakeState;
+                }
+                break;
+
+            case FORWARD_SLOW:
+                if(intakeState != currentIntakeState)
+                {
+                    intake.setPower(0.4);
                     currentIntakeState = intakeState;
                 }
                 break;
