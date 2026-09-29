@@ -23,24 +23,30 @@ public class CornerPark extends OpMode
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     // Poses
-    private final Pose startPose = poseFactory.of(24, 24, 0);
-    private final Pose scorePose = poseFactory.of(48, 48, 90);
-    private final Pose parkPose = poseFactory.of(72, 48, 0);
+    private final Pose startPose = poseFactory.of(136, 10,Math.toRadians(180));
+    private final Pose scorePose = poseFactory.of(132, 15, Math.toRadians(180));
+    //private final Pose parkPose = poseFactory.of(136, 15, Math.toRadians(180));
+
+
 
     // Path methods
     private Path startToScore() {
         return line(startPose, scorePose).linear(startPose, scorePose);
     }
-
+/*
     private Path park(){
         return line(scorePose, parkPose).linear(scorePose, parkPose);
     }
 
+ */
+
+
+
     private Command autoRoutine() {
         return sequential(
-                follow(follower, startToScore()),
+                follow(follower, startToScore())
                 // Add mechanism commands here.
-                follow(follower, park())
+                //follow(follower, park())
         );
     }
 
