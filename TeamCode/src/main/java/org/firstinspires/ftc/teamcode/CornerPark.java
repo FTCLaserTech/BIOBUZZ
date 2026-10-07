@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
@@ -29,10 +30,11 @@ public class CornerPark extends OpMode
     private final Pose scorePoseLeft = poseFactory.of(132, 20, 180);
     private final Pose startPoseRight = poseFactory.of(134, 24,180);
     private final Pose scorePoseRight = poseFactory.of(132, 20, 180);
-    private final Pose startPose = startPoseLeft;
-    private final Pose scorePose = scorePoseLeft;
+    //private final Pose startPose = startPoseLeft;
+    //private final Pose scorePose = scorePoseLeft;
     //private final Pose parkPose = poseFactory.of(136, 15, 180);
 
+    /*
     // Path methods
     private Path startToScore() {
         return line(startPose, scorePose).linear(startPose, scorePose);
@@ -45,14 +47,16 @@ public class CornerPark extends OpMode
                 //follow(follower, park())
         );
     }
+     */
 
     @Override
-    public void init() {
+    public void init()
+    {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        follower.setPose(startPose);
-        follower.update();
+        //follower.setPose(startPoseLeft);
+        //follower.update();
     }
 
     @Override
@@ -74,12 +78,27 @@ public class CornerPark extends OpMode
     }
 
     @Override
-    public void start() {
-        schedule(autoRoutine());
+    public void start()
+    {
+        Path startToScore = null;
+        if(startorientation == LeftRight.LEFT)
+        {
+            follower.setPose(startPoseLeft);
+            follower.update();
+            startToScore = Paths.line(startPoseLeft, scorePoseLeft).linear(startPoseLeft, scorePoseLeft);
+        }
+        else
+        {
+            follower.setPose(startPoseRight);
+            follower.update();
+            startToScore = Paths.line(startPoseRight, scorePoseRight).linear(startPoseRight, scorePoseRight);
+        }
+        schedule(follow(follower, startToScore));
     }
 
     @Override
-    public void loop() {
+    public void loop()
+    {
         follower.update();
         Scheduler.execute();
         // add your other methods needed in the loop here
