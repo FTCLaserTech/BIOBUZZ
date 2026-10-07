@@ -21,26 +21,22 @@ public class CornerPark extends OpMode
 {
     private Follower follower;
     private final PoseFactory poseFactory = PoseFactory.degrees();
+    private enum LeftRight{LEFT,RIGHT}
+    private LeftRight startorientation = LeftRight.LEFT;
 
     // Poses
-    private final Pose startPose = poseFactory.of(136, 10,Math.toRadians(180));
-    private final Pose scorePose = poseFactory.of(132, 15, Math.toRadians(180));
-    //private final Pose parkPose = poseFactory.of(136, 15, Math.toRadians(180));
-
-
+    private final Pose startPoseLeft = poseFactory.of(134, 16,180);
+    private final Pose scorePoseLeft = poseFactory.of(132, 20, 180);
+    private final Pose startPoseRight = poseFactory.of(134, 24,180);
+    private final Pose scorePoseRight = poseFactory.of(132, 20, 180);
+    private final Pose startPose = startPoseLeft;
+    private final Pose scorePose = scorePoseLeft;
+    //private final Pose parkPose = poseFactory.of(136, 15, 180);
 
     // Path methods
     private Path startToScore() {
         return line(startPose, scorePose).linear(startPose, scorePose);
     }
-/*
-    private Path park(){
-        return line(scorePose, parkPose).linear(scorePose, parkPose);
-    }
-
- */
-
-
 
     private Command autoRoutine() {
         return sequential(
@@ -54,9 +50,27 @@ public class CornerPark extends OpMode
     public void init() {
         Scheduler.reset();
 
-        //follower = Constants.create(hardwareMap);
+        follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
+    }
+
+    @Override
+    public void init_loop()
+    {
+        if(gamepad2.left_trigger_pressed)
+        {
+            if (startorientation == LeftRight.LEFT)
+            {
+                startorientation = LeftRight.RIGHT;
+            }
+            else
+            {
+                startorientation = LeftRight.LEFT;
+            }
+        }
+        telemetry.addData("Startposition (LT): ", startorientation);
+        telemetry.update();
     }
 
     @Override
