@@ -93,7 +93,12 @@ public class CornerPark extends OpMode
             follower.update();
             startToScore = Paths.line(startPoseRight, scorePoseRight).linear(startPoseRight, scorePoseRight);
         }
-        schedule(follow(follower, startToScore));
+
+        Command park = sequential(
+                follow(follower, startToScore)
+        );
+
+        schedule(park);
         //return startToScore;
     }
 

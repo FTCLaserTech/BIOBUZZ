@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
@@ -26,26 +28,6 @@ public class ShootAuto extends OpMode
 
     private LeftRight startorientation = LeftRight.LEFT;
 
-    // Poses
-    private final Pose startPoseLeft = poseFactory.of(85, 9, 90);
-    private final Pose scorePoseLeft = poseFactory.of(85, 11, 90);
-
-
-    /*
-    // Path methods
-    private Path startToScore() {
-        return line(startPose, scorePose).linear(startPose, scorePose);
-    }
-
-    private Command autoRoutine() {
-        return sequential(
-                follow(follower, startToScore())
-                // Add mechanism commands here.
-                //follow(follower, park())
-        );
-    }
-     */
-
     @Override
     public void init()
     {
@@ -59,6 +41,7 @@ public class ShootAuto extends OpMode
     @Override
     public void init_loop()
     {
+        /*
         if (gamepad2.left_trigger_pressed)
         {
             if (startorientation == LeftRight.LEFT)
@@ -71,12 +54,13 @@ public class ShootAuto extends OpMode
         }
         telemetry.addData("Startposition (LT): ", startorientation);
         telemetry.update();
+         */
     }
 
 
     private final Pose start = poseFactory.of(85, 132, 90);
     private final Pose path1Start = poseFactory.of(85, 132, 270);
-    private final Pose path1 = poseFactory.of(85, 132, 270);
+    private final Pose point1 = poseFactory.of(85, 132, 270);
     private final Pose point2 = poseFactory.of(85, 127, 270);
     private final Pose point3Start = poseFactory.of(85, 127, 0);
     private final Pose point3 = poseFactory.of(140, 130, 90);
@@ -84,27 +68,26 @@ public class ShootAuto extends OpMode
     private final Pose point4 = poseFactory.of(85, 132, 270);
 
     @Override
-    public void start(){}
+    public void start()
+    {
+        Path path1 = Paths.line(path1Start, point1).linear(path1Start, point1);
+        Path path2 = Paths.line(point1, point2).linear(point1, point2);
+        Path path3 = Paths.line(point3Start, point3).linear(point3Start, point3);
+        Path path4 = Paths.line(point4Start, point4).linear(point4Start, point4);
 
-        public Path path1()
-        {
-            return line(path1Start, path1).linear(path1Start, path1);
-        }
+        Command firstSequence = sequential(
+                // turn on shooter,
+                // wait for shooter to get up to speed,
+                // shoot artifacts,
+                // turn on intake
+                // move to line and pickup artifacts
+                follow(follower, path1)
+        );
 
-        public Path path2()
-        {
-            return line(path1, point2).linear(path1, point2);
-        }
+        schedule(firstSequence);
 
-        public Path path3()
-        {
-            return line(point3Start, point3).linear(point3Start, point3);
-        }
+    }
 
-        public Path path4()
-        {
-            return line(point4Start, point4).linear(point4Start, point4);
-        }
 
 
     @Override
