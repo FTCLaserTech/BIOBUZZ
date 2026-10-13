@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "dev.frozenmilk:Load:0.3.0"
+        classpath "dev.frozenmilk:Load:0.3.2"
     }
 }
 
@@ -39,20 +39,12 @@ android {
 }
 
 repositories {
-    // Dairy releases repository
-    maven {
-        url = "https://repo.dairy.foundation/releases"
-    }
-    // Dairy snapshots repository
-    maven {
-        url = "https://repo.dairy.foundation/snapshots"
-    }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
     implementation("dev.frozenmilk.sinister:Sloth:0.3.2")
-    implementation 'dev.nextftc.v2:control:0.2.1'
-    implementation 'dev.nextftc.v2:hardware:0.2.1'
-    implementation 'dev.nextftc.v2:robot:0.2.1'
+    //implementation 'dev.nextftc.v2:control:0.2.1'
+    //implementation 'dev.nextftc.v2:hardware:0.2.1'
+    //implementation 'dev.nextftc.v2:robot:0.2.1'
 }

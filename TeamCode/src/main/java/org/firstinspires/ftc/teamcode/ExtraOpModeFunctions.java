@@ -1,17 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.SECONDS;
-
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.pedropathing.controllers.Controller;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import dev.nextftc.control.feedforward.SimpleFeedforward;
-import dev.nextftc.control.feedback.PIDController;
+//import dev.nextftc.control.feedforward.SimpleFeedforward;
+//import dev.nextftc.control.feedback.PIDController;
 
 public class ExtraOpModeFunctions
 {
@@ -33,14 +29,17 @@ public class ExtraOpModeFunctions
     public Servo ballStop;
     public Servo claw;
 
-    public SimpleFeedforward launcherController =
-            new SimpleFeedforward(0.00042, 0.0, 0.0);
+    //public SimpleFeedforward launcherController = new SimpleFeedforward(0.00042, 0.0, 0.0);
 
     double maxLauncherRPM = 4500.0;  //RPM
     double launcherTicksPerRev = 28.0;
     double maxLauncherTPS = launcherTicksPerRev * maxLauncherRPM / 60; // 2800
     //private double shooterTargetVelocity = 0.0;
-
+    private final Controller launcherPID = Controller.pid(1.0, 0.0, 0.0);
+    private final Controller launcherSFF = Controller.staticFeedforward(0.0);
+    private final Controller launcherPFF = Controller.proportionalFeedforward(0.0);
+    private Controller launcherController = launcherPID.plus(launcherSFF).plus(launcherPFF);
+    private double launcherTargetSpeed = 0.0;
 
     public ExtraOpModeFunctions(HardwareMap hardwareMap)
     {
@@ -182,25 +181,41 @@ public class ExtraOpModeFunctions
     }
 
 
-    public void setLauncher(double launcherSpeed)
+    public void setLauncherTargetSpeed(double launcherSpeed)
     {
+        if(launcherSpeed > maxLauncherTPS)
+        {
+            launcherTargetSpeed = maxLauncherTPS;
+        }
+        else
+        {
+            launcherTargetSpeed = launcherSpeed;
+        }
+
+        //launcher1.setVelocity(launcherSpeed);
+        //launcher2.setVelocity(launcherSpeed);
+    }
+
+    public void updateLauncherSpeed()
+    {
+        double power = launcherController.calculate(launcherTargetSpeed, getLauncherSpeed());
+
         /*
         double power = launcherController.calculate(new KineticState(
                 launcher1.getCurrentPosition(),
                 launcher1.getVelocity()
         ));
-        launcher1.setPower(power);
-        launcher2.setPower(power);
         */
 
-        launcher1.setVelocity(launcherSpeed);
-        launcher2.setVelocity(launcherSpeed);
+        launcher1.setPower(power);
+        launcher2.setPower(power);
+
     }
 
     public double getLauncherSpeed()
     {
-        return(0);
-        //return((launcher1.getVelocity()+ launcher2.getVelocity())/2);
+        //return(0);
+        return((launcher1.getVelocity()+ launcher2.getVelocity())/2);
     }
 
     public double adjustAngleForDriverPosition(double angle, RobotStartPosition robotStartPosition)

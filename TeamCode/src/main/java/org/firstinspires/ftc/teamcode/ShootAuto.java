@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 public class ShootAuto extends OpMode
 {
     private Follower follower;
+    private ExtraOpModeFunctions extras;
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private enum LeftRight
@@ -34,8 +35,7 @@ public class ShootAuto extends OpMode
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        //follower.setPose(startPoseLeft);
-        //follower.update();
+        extras = new ExtraOpModeFunctions(hardwareMap);
     }
 
     @Override
@@ -58,9 +58,9 @@ public class ShootAuto extends OpMode
     }
 
 
-    private final Pose start = poseFactory.of(85, 132, 90);
-    private final Pose path1Start = poseFactory.of(85, 132, 270);
-    private final Pose point1 = poseFactory.of(85, 132, 270);
+    //private final Pose start = poseFactory.of(85, 132, 90);
+    private final Pose path1Start = poseFactory.of(87.5, 134, 270.0);
+    private final Pose point1 = poseFactory.of(125, 132, 0.0);
     private final Pose point2 = poseFactory.of(85, 127, 270);
     private final Pose point3Start = poseFactory.of(85, 127, 0);
     private final Pose point3 = poseFactory.of(140, 130, 90);
@@ -70,29 +70,35 @@ public class ShootAuto extends OpMode
     @Override
     public void start()
     {
+        follower.setPose(path1Start);
+        follower.update();
         Path path1 = Paths.line(path1Start, point1).linear(path1Start, point1);
         Path path2 = Paths.line(point1, point2).linear(point1, point2);
         Path path3 = Paths.line(point3Start, point3).linear(point3Start, point3);
         Path path4 = Paths.line(point4Start, point4).linear(point4Start, point4);
 
         Command firstSequence = sequential(
-                // turn on shooter,
                 // wait for shooter to get up to speed,
                 // shoot artifacts,
                 // turn on intake
                 // move to line and pickup artifacts
                 follow(follower, path1)
+                // turn off intake
+                // move back to shooting position
         );
 
         schedule(firstSequence);
 
+        extras.setLauncherTargetSpeed(1000);
     }
-
 
 
     @Override
     public void loop()
     {
+        // recalc and update the launcher speed each time through the loop
+        extras.updateLauncherSpeed();
+
         follower.update();
         Scheduler.execute();
         // add your other methods needed in the loop here

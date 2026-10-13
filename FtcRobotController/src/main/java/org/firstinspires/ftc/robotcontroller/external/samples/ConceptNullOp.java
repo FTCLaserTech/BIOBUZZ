@@ -66,7 +66,7 @@ public class ConceptNullOp extends OpMode {
   @Override
   public void start() {
     runtime.reset();
-      return null;
+      //return null;
   }
 
   /**

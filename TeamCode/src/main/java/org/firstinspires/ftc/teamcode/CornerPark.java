@@ -30,24 +30,6 @@ public class CornerPark extends OpMode
     private final Pose scorePoseLeft = poseFactory.of(132, 20, 180);
     private final Pose startPoseRight = poseFactory.of(134, 24,180);
     private final Pose scorePoseRight = poseFactory.of(132, 20, 180);
-    //private final Pose startPose = startPoseLeft;
-    //private final Pose scorePose = scorePoseLeft;
-    //private final Pose parkPose = poseFactory.of(136, 15, 180);
-
-    /*
-    // Path methods
-    private Path startToScore() {
-        return line(startPose, scorePose).linear(startPose, scorePose);
-    }
-
-    private Command autoRoutine() {
-        return sequential(
-                follow(follower, startToScore())
-                // Add mechanism commands here.
-                //follow(follower, park())
-        );
-    }
-     */
 
     @Override
     public void init()
@@ -55,14 +37,12 @@ public class CornerPark extends OpMode
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        //follower.setPose(startPoseLeft);
-        //follower.update();
     }
 
     @Override
     public void init_loop()
     {
-        if(gamepad2.left_trigger_pressed)
+        if(gamepad2.leftBumperWasPressed())
         {
             if (startorientation == LeftRight.LEFT)
             {
@@ -73,14 +53,15 @@ public class CornerPark extends OpMode
                 startorientation = LeftRight.LEFT;
             }
         }
-        telemetry.addData("Startposition (LT): ", startorientation);
+        telemetry.addData("Startposition (Left Bumper): ", startorientation);
         telemetry.update();
     }
 
     @Override
     public void start()
     {
-        Path startToScore = null;
+        follower.setPose(startPoseLeft);
+        follower.update();        Path startToScore = null;
         if(startorientation == LeftRight.LEFT)
         {
             follower.setPose(startPoseLeft);

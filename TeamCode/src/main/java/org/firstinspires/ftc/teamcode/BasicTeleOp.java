@@ -3,19 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
 
-import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import com.pedropathing.follower.ManualDrive;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import static java.lang.Math.cos;
-
-import dev.nextftc.control.geometry.PoseVelocity2d;
-import dev.nextftc.control.geometry.Vector2d;
+//import dev.nextftc.control.geometry.PoseVelocity2d;
+//import dev.nextftc.control.geometry.Vector2d;
 
 
 @TeleOp(group = "A")
@@ -89,7 +85,7 @@ public class BasicTeleOp extends OpMode
     public void start()
     {
         runtime.reset();
-        return null;
+        //return null;
     }
 
     /*
@@ -141,7 +137,7 @@ public class BasicTeleOp extends OpMode
             }
         }
 
-        extras.setLauncher(launcherVelocity);
+        extras.setLauncherTargetSpeed(launcherVelocity);
 
         /*
         Intake and Ballstop

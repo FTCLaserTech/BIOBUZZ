@@ -79,7 +79,7 @@ public class ConceptLEDStick extends OpMode {
     @Override
     public void start() {
         resetRuntime();
-        return null;
+        //return null;
     }
 
     @Override
