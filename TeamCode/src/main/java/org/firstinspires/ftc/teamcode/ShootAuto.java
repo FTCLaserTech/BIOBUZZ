@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -58,14 +59,14 @@ public class ShootAuto extends OpMode
     }
 
 
-    //private final Pose start = poseFactory.of(85, 132, 90);
-    private final Pose path1Start = poseFactory.of(87.5, 134, 270.0);
-    private final Pose point1 = poseFactory.of(125, 132, 0.0);
-    private final Pose point2 = poseFactory.of(85, 127, 270);
-    private final Pose point3Start = poseFactory.of(85, 127, 0);
-    private final Pose point3 = poseFactory.of(140, 130, 90);
-    private final Pose point4Start = poseFactory.of(140, 130, 0);
-    private final Pose point4 = poseFactory.of(85, 132, 270);
+    private final Pose path1Start = poseFactory.of(87.5, 134, 270);
+    private final Pose point1 = poseFactory.of(87.5, 132, 270);
+    private final Pose point2 = poseFactory.of(90, 130, 0);
+    private final Pose point3 = poseFactory.of(105.0, 135, 0);
+    private final Pose point4 = poseFactory.of(131, 135, 0);
+    private final Pose point5 = poseFactory.of(87.5, 132, 270);
+
+
 
     @Override
     public void start()
@@ -73,23 +74,34 @@ public class ShootAuto extends OpMode
         follower.setPose(path1Start);
         follower.update();
         Path path1 = Paths.line(path1Start, point1).linear(path1Start, point1);
-        Path path2 = Paths.line(point1, point2).linear(point1, point2);
-        Path path3 = Paths.line(point3Start, point3).linear(point3Start, point3);
-        Path path4 = Paths.line(point4Start, point4).linear(point4Start, point4);
+        Path path2 = Paths.line(point1,point2).linear(point1,point2);
+        Path path3 = Paths.curve(point2,point3, point4).linear(point2, point4);
+        Path path4 = Paths.line(point4, point2).linear(point4, point2);
+        Path path5 = Paths.line(point2, point1).linear(point2, point1);
+
 
         Command firstSequence = sequential(
                 // wait for shooter to get up to speed,
                 // shoot artifacts,
                 // turn on intake
                 // move to line and pickup artifacts
-                follow(follower, path1)
+                follow(follower, path1),
+                waitMs(1000),
                 // turn off intake
                 // move back to shooting position
+                follow(follower, path2),
+                follow(follower, path3),
+                follow(follower, path4),
+                follow(follower, path5)
+
         );
+
+
+
 
         schedule(firstSequence);
 
-        extras.setLauncherTargetSpeed(1000);
+        //extras.setLauncherTargetSpeed(1000);
     }
 
 
