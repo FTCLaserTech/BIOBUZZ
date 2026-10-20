@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.controllers.Controller;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 //import dev.nextftc.control.feedforward.SimpleFeedforward;
 //import dev.nextftc.control.feedback.PIDController;
 
+@Configurable
 public class ExtraOpModeFunctions
 {
     //public HardwareMap hm = null;
@@ -35,10 +37,22 @@ public class ExtraOpModeFunctions
     double launcherTicksPerRev = 28.0;
     double maxLauncherTPS = launcherTicksPerRev * maxLauncherRPM / 60; // 2800
     //private double shooterTargetVelocity = 0.0;
-    private final Controller launcherPID = Controller.pid(1.0, 0.0, 0.0);
-    private final Controller launcherSFF = Controller.staticFeedforward(0.0);
-    private final Controller launcherPFF = Controller.proportionalFeedforward(0.0);
+
+    public static double kP = 0.00001;
+    public static double kI = 0.0;
+    public static double kD = 0.0;
+    public static double kS = 0.0;
+    public static double kV = 0.00042;
+
+    //private final Controller launcherPID = Controller.pid(kP, kI, kD);
+    //private final Controller launcherSFF = Controller.staticFeedforward(0.0);
+    //private final Controller launcherPFF = Controller.proportionalFeedforward(0.0);
+    //private Controller launcherController = launcherPID.plus(launcherSFF).plus(launcherPFF);
+    private Controller launcherPID = Controller.pid(kP, kI, kD);
+    private Controller launcherSFF = Controller.staticFeedforward(kS);
+    private Controller launcherPFF = Controller.proportionalFeedforward(kV);
     private Controller launcherController = launcherPID.plus(launcherSFF).plus(launcherPFF);
+
     private double launcherTargetSpeed = 0.0;
 
     public ExtraOpModeFunctions(HardwareMap hardwareMap)
@@ -77,7 +91,6 @@ public class ExtraOpModeFunctions
         ballStop = hardwareMap.get(Servo.class, "ballStop");
 
         claw = hardwareMap.get(Servo.class, "claw");
-
 
     }
 
@@ -196,8 +209,19 @@ public class ExtraOpModeFunctions
         //launcher2.setVelocity(launcherSpeed);
     }
 
-    public void updateLauncherSpeed()
+    public double getLauncherTargetSpeed()
     {
+        return(launcherTargetSpeed);
+    }
+
+    public double updateLauncherSpeed()
+    {
+        launcherPID = Controller.pid(kP, kI, kD);
+        launcherSFF = Controller.staticFeedforward(kS);
+        launcherPFF = Controller.proportionalFeedforward(kV);
+        launcherController = launcherPID.plus(launcherSFF).plus(launcherPFF);
+
+        //double power = launcherController.calculate(getLauncherSpeed(), launcherTargetSpeed);
         double power = launcherController.calculate(launcherTargetSpeed, getLauncherSpeed());
 
         /*
@@ -205,17 +229,21 @@ public class ExtraOpModeFunctions
                 launcher1.getCurrentPosition(),
                 launcher1.getVelocity()
         ));
+        // clip power to -1 to +1 range
         */
 
         launcher1.setPower(power);
         launcher2.setPower(power);
+        //launcher1.setPower(0.0);
+        //launcher2.setPower(0.0);
 
+        return(power);
     }
 
     public double getLauncherSpeed()
     {
         //return(0);
-        return((launcher1.getVelocity()+ launcher2.getVelocity())/2);
+        return((launcher1.getVelocity() + launcher2.getVelocity())/2);
     }
 
     public double adjustAngleForDriverPosition(double angle, RobotStartPosition robotStartPosition)

@@ -35,7 +35,7 @@ public class BasicTeleOp extends OpMode
     double rotationMultiplier = 1.0;
 
     double launcherVelocity = 0.0;
-    double storedlauncherVelocity = 2600.0;
+    double storedlauncherVelocity = 800.0;
 
 
     /*
@@ -85,7 +85,8 @@ public class BasicTeleOp extends OpMode
     public void start()
     {
         runtime.reset();
-        //return null;
+
+        extras.setLauncherTargetSpeed(500);
     }
 
     /*
@@ -136,8 +137,13 @@ public class BasicTeleOp extends OpMode
                 launcherVelocity = 0.0;
             }
         }
-
         extras.setLauncherTargetSpeed(launcherVelocity);
+
+        // recalc and update the launcher speed each time through the loop
+        telemetry.addData("Launcher Target Speed: ", extras.getLauncherTargetSpeed());
+        telemetry.addData("Launcher Set Speed: ", extras.updateLauncherSpeed());
+        telemetry.addData("Launcher Actual Speed: ", extras.getLauncherSpeed());
+        //extras.updateLauncherSpeed();
 
         /*
         Intake and Ballstop
@@ -194,9 +200,9 @@ public class BasicTeleOp extends OpMode
 
 
         telemetry.addData("Elevator position: ", extras.elevator.getCurrentPosition());
-        telemetry.addData("launcher target velocity: ", launcherVelocity);
-        telemetry.addData("launcher1 velocity: ", extras.launcher1.getVelocity());
-        telemetry.addData("launcher2 velocity: ", extras.launcher2.getVelocity());
+        //telemetry.addData("launcher target velocity: ", launcherVelocity);
+        //telemetry.addData("launcher1 velocity: ", extras.launcher1.getVelocity());
+        //telemetry.addData("launcher2 velocity: ", extras.launcher2.getVelocity());
         telemetry.update();
     }
 

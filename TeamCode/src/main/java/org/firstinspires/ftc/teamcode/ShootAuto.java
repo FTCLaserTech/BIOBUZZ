@@ -101,7 +101,7 @@ public class ShootAuto extends OpMode
 
         schedule(firstSequence);
 
-        //extras.setLauncherTargetSpeed(1000);
+        extras.setLauncherTargetSpeed(500);
     }
 
 
@@ -109,7 +109,10 @@ public class ShootAuto extends OpMode
     public void loop()
     {
         // recalc and update the launcher speed each time through the loop
-        extras.updateLauncherSpeed();
+        telemetry.addData("Launcher Target Speed: ", extras.getLauncherTargetSpeed());
+        telemetry.addData("Launcher Set Speed: ", extras.updateLauncherSpeed());
+        telemetry.addData("Launcher Actual Speed: ", extras.getLauncherSpeed());
+        //extras.updateLauncherSpeed();
 
         follower.update();
         Scheduler.execute();

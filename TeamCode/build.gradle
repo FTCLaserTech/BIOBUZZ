@@ -43,6 +43,7 @@ repositories {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation "com.bylazar:fullpanels:1.0.19"
     implementation("dev.frozenmilk.sinister:Sloth:0.3.2")
     //implementation 'dev.nextftc.v2:control:0.2.1'
     //implementation 'dev.nextftc.v2:hardware:0.2.1'
