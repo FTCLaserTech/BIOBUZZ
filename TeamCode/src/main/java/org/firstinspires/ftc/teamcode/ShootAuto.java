@@ -85,14 +85,24 @@ public class ShootAuto extends OpMode
                 // shoot artifacts,
                 // turn on intake
                 // move to line and pickup artifacts
+
                 follow(follower, path1),
-                waitMs(1000),
+                extras.BallStopOff,
+                extras.IntakeForward,
+                waitMs(1500),
+                extras.IntakeOff,
                 // turn off intake
                 // move back to shooting position
                 follow(follower, path2),
+                extras.BallStopOn,
                 follow(follower, path3),
                 follow(follower, path4),
-                follow(follower, path5)
+                extras.BallStopOff,
+                follow(follower, path5),
+                extras.IntakeForward,
+                waitMs(1500),
+                extras.IntakeOff
+
 
         );
 
@@ -101,7 +111,7 @@ public class ShootAuto extends OpMode
 
         schedule(firstSequence);
 
-        extras.setLauncherTargetSpeed(500);
+        extras.setLauncherTargetSpeed(2500);
     }
 
 

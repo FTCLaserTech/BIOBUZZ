@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import static com.pedropathing.ivy.commands.Commands.instant;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.controllers.Controller;
+import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -93,6 +96,10 @@ public class ExtraOpModeFunctions
         claw = hardwareMap.get(Servo.class, "claw");
 
     }
+    Command BallStopOn = instant(() -> ballStopOn());
+    Command BallStopOff = instant(() -> ballStopOff());
+    Command IntakeForward = instant(() -> IntakeForward());
+    Command IntakeOff = instant(() -> IntakeOff());
 
     public enum IntakeStates {NA, OFF, FORWARD, FORWARD_SLOW, REVERSE};
     IntakeStates currentIntakeState = IntakeStates.NA;
@@ -163,6 +170,14 @@ public class ExtraOpModeFunctions
         }
     }
 
+    private void IntakeOff()
+    {
+        intake.setPower(0.0);
+    }
+    private void IntakeForward()
+    {
+        intake.setPower(1.0);
+    }
     private void ballStopOn()
     {
         ballStop.setPosition(0.525);
