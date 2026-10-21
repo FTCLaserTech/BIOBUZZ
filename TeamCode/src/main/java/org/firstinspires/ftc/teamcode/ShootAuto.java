@@ -89,18 +89,18 @@ public class ShootAuto extends OpMode
                 follow(follower, path1),
                 extras.BallStopOff,
                 extras.IntakeForward,
-                waitMs(1500),
-                extras.IntakeOff,
+                waitMs(2000),
+                extras.BallStopOn,
                 // turn off intake
                 // move back to shooting position
                 follow(follower, path2),
-                extras.BallStopOn,
                 follow(follower, path3),
+                waitMs(1000),
                 follow(follower, path4),
-                extras.BallStopOff,
                 follow(follower, path5),
+                extras.BallStopOff,
                 extras.IntakeForward,
-                waitMs(1500),
+                waitMs(1000),
                 extras.IntakeOff
 
 
@@ -111,7 +111,7 @@ public class ShootAuto extends OpMode
 
         schedule(firstSequence);
 
-        extras.setLauncherTargetSpeed(2500);
+        extras.setLauncherTargetSpeed(2400);
     }
 
 
