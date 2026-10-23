@@ -178,12 +178,12 @@ public class ExtraOpModeFunctions
     {
         intake.setPower(1.0);
     }
-    private void ballStopOn()
+    public void ballStopOn()
     {
         ballStop.setPosition(0.525);
     }
 
-    private void ballStopOff()
+    public void ballStopOff()
     {
         ballStop.setPosition(0.0);
     }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -60,7 +61,7 @@ public class ShootAuto extends OpMode
 
 
     private final Pose path1Start = poseFactory.of(87.5, 134, 270);
-    private final Pose point1 = poseFactory.of(87.5, 132, 270);
+    private final Pose point1 = poseFactory.of(87.5, 133.5, 270);
     private final Pose point2 = poseFactory.of(90, 130, 0);
     private final Pose point3 = poseFactory.of(105.0, 135, 0);
     private final Pose point4 = poseFactory.of(131, 135, 0);
@@ -87,10 +88,10 @@ public class ShootAuto extends OpMode
                 // move to line and pickup artifacts
 
                 follow(follower, path1),
-                extras.BallStopOff,
+                instant(() -> extras.ballStopOff()),
                 extras.IntakeForward,
                 waitMs(2000),
-                extras.BallStopOn,
+                instant(() -> extras.ballStopOn()),
                 // turn off intake
                 // move back to shooting position
                 follow(follower, path2),
@@ -98,7 +99,7 @@ public class ShootAuto extends OpMode
                 waitMs(1000),
                 follow(follower, path4),
                 follow(follower, path5),
-                extras.BallStopOff,
+                instant(() -> extras.ballStopOff()),
                 extras.IntakeForward,
                 waitMs(1000),
                 extras.IntakeOff
@@ -111,7 +112,7 @@ public class ShootAuto extends OpMode
 
         schedule(firstSequence);
 
-        extras.setLauncherTargetSpeed(2400);
+        extras.setLauncherTargetSpeed(2500);
     }
 
 
