@@ -29,9 +29,13 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -52,7 +56,7 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Concept: AprilTag Switchable Cameras", group = "Concept")
-@Disabled
+//@Disabled
 public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
     /*
@@ -72,8 +76,11 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
      */
     private VisionPortal visionPortal;
 
-    @Override
+    //@Override
     public void runOpMode() {
+
+        ElapsedTime runtime = new ElapsedTime();
+        double lastTime = 0.0;
 
         initAprilTag();
 
@@ -83,6 +90,8 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+        runtime.reset();
+
         while (opModeIsActive()) {
 
             telemetryCameraSwitching();
@@ -90,6 +99,10 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
 
             // Push telemetry to the Driver Station.
             telemetry.update();
+
+            double currentTime = runtime.time();
+            telemetry.addData("Loop Time: ", currentTime-lastTime);
+            lastTime = currentTime;
 
             // Save CPU resources; can resume streaming when needed.
             if (gamepad1.dpad_down) {
@@ -101,7 +114,7 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
             doCameraSwitching();
 
             // Share the CPU.
-            sleep(20);
+            sleep(2);
         }
 
         // Save more CPU resources when camera is no longer needed.
@@ -125,6 +138,8 @@ public class ConceptAprilTagSwitchableCameras extends LinearOpMode {
         // Create the vision portal by using a builder.
         visionPortal = new VisionPortal.Builder()
             .setCamera(switchableCamera)
+            .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+            .setCameraResolution(new Size(1280, 800))
             .addProcessor(aprilTag)
             .build();
 
