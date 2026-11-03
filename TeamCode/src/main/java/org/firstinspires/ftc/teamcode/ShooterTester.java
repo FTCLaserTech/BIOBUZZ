@@ -52,7 +52,7 @@ public class ShooterTester extends OpMode
     {
         launcher1 = hardwareMap.get(DcMotorEx.class, "launcher1");
         launcher1.setDirection(DcMotorEx.Direction.REVERSE);
-        launcher1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        launcher1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
         //launcher1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //launcher1.setVelocity(0.0);
         launcher1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -60,7 +60,7 @@ public class ShooterTester extends OpMode
 
         launcher2 = hardwareMap.get(DcMotorEx.class, "launcher2");
         launcher2.setDirection(DcMotorEx.Direction.FORWARD);
-        launcher2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        launcher2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
         //launcher2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //launcher2.setVelocity(0.0);
         launcher2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -132,6 +132,8 @@ public class ShooterTester extends OpMode
         launcher2.setPower(launcherVelocity);
 
         // recalc and update the launcher speed each time through the loop
+        telemetry.addLine("X: On/Off ");
+        telemetry.addLine("Dpad Up/Down: Faster/Slower");
         telemetry.addData("Launcher Target Speed: ", launcherVelocity);
         //telemetry.addData("Launcher Set Speed: ", extras.updateLauncherSpeed());
         telemetry.addData("Launcher Actual Speed: ", (launcher1.getVelocity() + launcher2.getVelocity())/2);
