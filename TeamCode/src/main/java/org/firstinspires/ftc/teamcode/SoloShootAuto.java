@@ -66,7 +66,7 @@ public class SoloShootAuto extends OpMode
     private final Pose point3 = poseFactory.of(105.0, 135, 0);
     private final Pose point4 = poseFactory.of(131, 135, 0);
     private final Pose point5 = poseFactory.of(85, 132, 270);
-    //private final Pose point6 = poseFactory.of(80.5326, 62.5655, 270);
+    private final Pose point6 = poseFactory.of(85, 130, 90);
     private final Pose point7 = poseFactory.of(78.0124, 10, 90);
     //private final Pose point8 = poseFactory.of(82.0599, 3.2636, 168.7254);
     private final Pose point9 = poseFactory.of(82.0599, 10, 0);
@@ -85,10 +85,10 @@ public class SoloShootAuto extends OpMode
         Path path4 = Paths.line(point4, point2).linear(point4, point2);
         Path path5 = Paths.line(point2, point1).linear(point2, point1);
         Path path6 = Paths.line(point1, point5).linear(point1, point5);
-        Path path7 = Paths.line(point5, point7).linear(point5, point7);
-        Path path8 = Paths.line(point7, point9).linear(point7, point9);
-        Path path9 = Paths.line(point9, point7).linear(point9, point7); // put back in
-        //Path path10 = Paths.line(point8, point9).linear(point8, point9);
+        Path path7 = Paths.line(point5, point6).linear(point5, point6);
+        Path path8 = Paths.line(point6, point7).linear(point6, point7);
+        Path path9 = Paths.line(point7, point9).linear(point7, point9); // put back in
+        Path path10 = Paths.line(point9, point7).linear(point9, point7);
         //Path path11 = Paths.line(point9, point10).linear(point9, point10); // Put back in
         //Path path12 = Paths.line(point9, point1).linear(point9, point1); // put back in
 
@@ -96,7 +96,7 @@ public class SoloShootAuto extends OpMode
         Command firstSequence = sequential(
                 follow(follower, path1),
                 instant(() -> extras.ballStopOff()),
-                extras.IntakeForward,
+                //extras.IntakeForward,
                 waitMs(2000),
                 instant(() -> extras.ballStopOn()),
                 follow(follower, path2),
@@ -105,7 +105,7 @@ public class SoloShootAuto extends OpMode
                 follow(follower, path4),
                 follow(follower, path5),
                 instant(() -> extras.ballStopOff()),
-                extras.IntakeForward,
+                //extras.IntakeForward,
                 waitMs(1000),
                 follow(follower, path6),
                 waitMs(3000),
@@ -116,10 +116,10 @@ public class SoloShootAuto extends OpMode
                 instant(() -> extras.ballStopOn()),
                 waitMs(2000),
                 follow(follower, path9),
-                //follow(follower, path10),
+                follow(follower, path10)
                 //follow(follower, path11),  //Put it back in
                 //follow(follower, path12) // put back in
-                extras.IntakeOff
+                //extras.IntakeOff
 
 
         );
