@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @Autonomous
-public class SoloShootAuto extends OpMode
+public class FirstShot_Solo extends OpMode
 {
     private Follower follower;
     private ExtraOpModeFunctions extras;
