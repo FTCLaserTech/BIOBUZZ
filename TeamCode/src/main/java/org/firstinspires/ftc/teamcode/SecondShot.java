@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
@@ -19,8 +18,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
+// This auto acts as if we have a partner that shoots first and we shoot after the first hive switch.
 @Autonomous
-public class ShootAuto extends OpMode
+public class SecondShot extends OpMode
 {
     private Follower follower;
     private ExtraOpModeFunctions extras;

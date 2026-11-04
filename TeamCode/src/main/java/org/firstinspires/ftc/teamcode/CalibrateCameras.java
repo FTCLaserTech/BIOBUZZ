@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Size;
 
+import com.pedropathing.utils.Angle;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -41,10 +42,15 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionPortal.CameraState;
 import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
@@ -84,6 +90,11 @@ public class CalibrateCameras extends LinearOpMode {
 
     private enum CameraModule{WEBCAM1, WEBCAM2};
     private CameraModule cameraModule = CameraModule.WEBCAM1;
+
+    private Position camera1Position = new Position(DistanceUnit.INCH,0.0,1.0,0.0,0);
+    YawPitchRollAngles camera1Orientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 25.0, 0.0, 0);
+    private Position camera2Position = new Position(DistanceUnit.INCH,0.0,-1.0,0.0,1);
+    YawPitchRollAngles camera2Orientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 25.0, 0.0, 0);
 
     //@Override
     public void runOpMode()
@@ -227,7 +238,9 @@ public class CalibrateCameras extends LinearOpMode {
     private void initAprilTag() {
 
         // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
+        aprilTag = new AprilTagProcessor.Builder()
+                .setCameraPose(camera1Position, camera1Orientation)
+                .build();
 
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
         webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
@@ -247,26 +260,34 @@ public class CalibrateCameras extends LinearOpMode {
     /**
      * Add telemetry about AprilTag detections.
      */
-    private void telemetryAprilTag() {
+    private void telemetryAprilTag()
+    {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection instanceof AprilTagSingleDetection) {
+        for (AprilTagDetection detection : currentDetections)
+        {
+            if (detection instanceof AprilTagSingleDetection)
+            {
                 AprilTagSingleDetection singleDet = (AprilTagSingleDetection) detection;
 
-                if (singleDet.metadata != null) {
+                if (singleDet.metadata != null)
+                {
                     telemetry.addLine(String.format("\n==== (ID %d) %s", singleDet.id, singleDet.metadata.name));
                     telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
                     telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
                     telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-                } else {
+                }
+                else
+                {
                     telemetry.addLine(String.format("\n==== (ID %d) Unknown", singleDet.id));
                     telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", singleDet.center.x, singleDet.center.y));
                 }
-            }  else {
+            }
+            else
+            {
                 AprilTagClusterDetection clusterDet = (AprilTagClusterDetection) detection;
                 telemetry.addLine(String.format("\n==== Tag Cluster (%s)", clusterDet.metadata.name));
                 telemetry.addLine(String.format("Percent tags found: %d", clusterDet.percentClusterFound));
@@ -331,7 +352,8 @@ public class CalibrateCameras extends LinearOpMode {
         Read this camera's minimum and maximum Exposure and Gain settings.
         Can only be called AFTER calling initAprilTag();
      */
-    private void getCameraSetting() {
+    private void getCameraSetting()
+    {
         // Ensure Vision Portal has been setup.
         if (visionPortal == null) {
             return;
@@ -363,4 +385,27 @@ public class CalibrateCameras extends LinearOpMode {
             maxGain2 = maxGain1;
         }
     }
+
+    /*
+    private AprilTagPoseFtc cameraRelativeToRobotRelative(AprilTagPoseFtc pose)
+    {
+        // Extract raw positions from the camera frame
+        double xc = detection.ftcPose.x;
+        double yc = detection.ftcPose.y;
+        double zc = detection.ftcPose.z;
+
+        // Step 1: Account for the 35-degree upward tilt (Rotation around X-axis)
+        double xFlat = xc;
+        double yFlat = (yc * Math.cos(CAMERA_TILT_RADS)) - (zc * Math.sin(CAMERA_TILT_RADS));
+        double zFlat = (yc * Math.sin(CAMERA_TILT_RADS)) + (zc * Math.cos(CAMERA_TILT_RADS));
+
+        // Step 2: Translate relative to the center of the robot
+        double xRobot = xFlat + CAMERA_LATERAL_OFFSET;
+        double yRobot = yFlat + CAMERA_FORWARD_OFFSET;
+        double zRobot = zFlat + CAMERA_HEIGHT_OFFSET;
+
+        return pose;
+    }
+    
+     */
 }   // end class
