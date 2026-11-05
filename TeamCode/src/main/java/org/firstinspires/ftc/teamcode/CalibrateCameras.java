@@ -44,6 +44,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -92,9 +93,11 @@ public class CalibrateCameras extends LinearOpMode {
     private CameraModule cameraModule = CameraModule.WEBCAM1;
 
     private Position camera1Position = new Position(DistanceUnit.INCH,0.0,1.0,0.0,0);
-    YawPitchRollAngles camera1Orientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 25.0, 0.0, 0);
+    private YawPitchRollAngles camera1Orientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 25.0, 0.0, 0);
+    private final Pose3D camera1Pose = new Pose3D(camera1Position, camera1Orientation);
     private Position camera2Position = new Position(DistanceUnit.INCH,0.0,-1.0,0.0,1);
-    YawPitchRollAngles camera2Orientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 25.0, 0.0, 0);
+    private YawPitchRollAngles camera2Orientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 25.0, 0.0, 0);
+    private final Pose3D camera2Pose = new Pose3D(camera2Position, camera2Orientation);
 
     //@Override
     public void runOpMode()
@@ -289,11 +292,22 @@ public class CalibrateCameras extends LinearOpMode {
             else
             {
                 AprilTagClusterDetection clusterDet = (AprilTagClusterDetection) detection;
+                AprilTagPoseFtc pose = null;
+
+                if(cameraModule == CameraModule.WEBCAM1)
+                {
+                    pose = cameraRelativeToRobotRelative(detection.ftcPose, camera1Pose);
+                }
+                else
+                {
+                    pose = cameraRelativeToRobotRelative(detection.ftcPose, camera2Pose);
+                }
+
                 telemetry.addLine(String.format("\n==== Tag Cluster (%s)", clusterDet.metadata.name));
                 telemetry.addLine(String.format("Percent tags found: %d", clusterDet.percentClusterFound));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", pose.x, pose.y, pose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", pose.pitch, pose.roll, pose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", pose.range, pose.bearing, pose.elevation));
             }
         }   // end for() loop
 
@@ -386,26 +400,25 @@ public class CalibrateCameras extends LinearOpMode {
         }
     }
 
-    /*
-    private AprilTagPoseFtc cameraRelativeToRobotRelative(AprilTagPoseFtc pose)
+    private AprilTagPoseFtc cameraRelativeToRobotRelative(AprilTagPoseFtc pose, Pose3D cameraPose)
     {
         // Extract raw positions from the camera frame
-        double xc = detection.ftcPose.x;
-        double yc = detection.ftcPose.y;
-        double zc = detection.ftcPose.z;
+        double xc = pose.x;
+        double yc = pose.y;
+        double zc = pose.z;
+        double pitch = cameraPose.getOrientation().getPitch(AngleUnit.RADIANS);
 
         // Step 1: Account for the 35-degree upward tilt (Rotation around X-axis)
         double xFlat = xc;
-        double yFlat = (yc * Math.cos(CAMERA_TILT_RADS)) - (zc * Math.sin(CAMERA_TILT_RADS));
-        double zFlat = (yc * Math.sin(CAMERA_TILT_RADS)) + (zc * Math.cos(CAMERA_TILT_RADS));
+        double yFlat = (yc * Math.cos(pitch)) - (zc * Math.sin(pitch));
+        double zFlat = (yc * Math.sin(pitch)) + (zc * Math.cos(pitch));
 
         // Step 2: Translate relative to the center of the robot
-        double xRobot = xFlat + CAMERA_LATERAL_OFFSET;
-        double yRobot = yFlat + CAMERA_FORWARD_OFFSET;
-        double zRobot = zFlat + CAMERA_HEIGHT_OFFSET;
+        double xRobot = xFlat + cameraPose.getPosition().x;
+        double yRobot = yFlat + cameraPose.getPosition().y;
+        double zRobot = zFlat + cameraPose.getPosition().z;
 
         return pose;
     }
-    
-     */
+
 }   // end class
