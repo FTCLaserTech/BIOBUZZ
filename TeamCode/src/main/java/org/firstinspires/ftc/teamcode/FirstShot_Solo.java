@@ -70,6 +70,7 @@ public class FirstShot_Solo extends OpMode
     private final Pose point7 = poseFactory.of(78.0124, 10, 90);
     //private final Pose point8 = poseFactory.of(82.0599, 3.2636, 168.7254);
     private final Pose point9 = poseFactory.of(82.0599, 10, 0);
+    private final Pose point10 = poseFactory.of(85, 130, 270);
     //private final Pose point10 = poseFactory.of(78.7785, 10, 0);
     //private final Pose point11 = poseFactory.of(85.2361, 131.9936, -92.8776);
 
@@ -79,24 +80,24 @@ public class FirstShot_Solo extends OpMode
     {
         follower.setPose(path1Start);
         follower.update();
-        Path path1 = Paths.line(path1Start, point1).linear(path1Start, point1);
-        Path path2 = Paths.line(point1,point2).linear(point1,point2);
-        Path path3 = Paths.curve(point2,point3, point4).linear(point2, point4);
-        Path path4 = Paths.line(point4, point2).linear(point4, point2);
-        Path path5 = Paths.line(point2, point1).linear(point2, point1);
-        Path path6 = Paths.line(point1, point5).linear(point1, point5);
-        Path path7 = Paths.line(point5, point6).linear(point5, point6);
-        Path path8 = Paths.line(point6, point7).linear(point6, point7);
-        Path path9 = Paths.line(point7, point9).linear(point7, point9); // put back in
-        Path path10 = Paths.line(point9, point7).linear(point9, point7);
-        //Path path11 = Paths.line(point9, point10).linear(point9, point10); // Put back in
-        //Path path12 = Paths.line(point9, point1).linear(point9, point1); // put back in
+        Path path1 = Paths.line(path1Start, point1).linear(path1Start, point1); // move forward to shoot
+        Path path2 = Paths.line(point1,point2).linear(point1,point2); // turn to human player zone
+        Path path3 = Paths.curve(point2,point3, point4).linear(point2, point4); // pick up balls from zone
+        Path path4 = Paths.line(point4, point2).linear(point4, point2); // go back to shoot
+        Path path5 = Paths.line(point2, point1).linear(point2, point1); // shoot
+        Path path6 = Paths.line(point1, point5).linear(point1, point5); // align to go to other side
+        Path path7 = Paths.line(point5, point6).linear(point5, point6); // turn around to reverse to the other side
+        Path path8 = Paths.line(point6, point7).linear(point6, point7); // Move to shooting zone on the other side
+        Path path9 = Paths.line(point7, point9).linear(point7, point9); // turn to flower to pick up
+        Path path10 = Paths.line(point9, point7).linear(point9, point7); // turn back to shoot pollen from the flower
+        Path path11 = Paths.line(point7, point10).linear(point7, point10); // start heading back
+        //Path path12 = Paths.line(point6, point10).linear(point6, point10); // back on the other side
 
 
         Command firstSequence = sequential(
                 follow(follower, path1),
                 instant(() -> extras.ballStopOff()),
-                //extras.IntakeForward,
+                extras.IntakeForward,
                 waitMs(2000),
                 instant(() -> extras.ballStopOn()),
                 follow(follower, path2),
@@ -105,7 +106,7 @@ public class FirstShot_Solo extends OpMode
                 follow(follower, path4),
                 follow(follower, path5),
                 instant(() -> extras.ballStopOff()),
-                //extras.IntakeForward,
+                extras.IntakeForward,
                 waitMs(1000),
                 follow(follower, path6),
                 waitMs(3000),
@@ -116,17 +117,18 @@ public class FirstShot_Solo extends OpMode
                 instant(() -> extras.ballStopOn()),
                 waitMs(2000),
                 follow(follower, path9),
-                follow(follower, path10)
-                //follow(follower, path11),  //Put it back in
+                waitMs(2000),
+                follow(follower, path10),
+                follow(follower, path11),  //Put it back in
                 //follow(follower, path12) // put back in
-                //extras.IntakeOff
+                extras.IntakeOff
 
 
         );
 
         schedule(firstSequence);
 
-        //extras.setLauncherTargetSpeed(2500);
+        extras.setLauncherTargetSpeed(2500);
     }
 
 
