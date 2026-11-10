@@ -85,22 +85,15 @@ public class CameraFunctions
     private int exposure, minExposure, maxExposure;
     private int gain, minGain, maxGain;
 
-    private enum CameraModule{WEBCAM1, WEBCAM2};
-    private CameraModule cameraModule = CameraModule.WEBCAM1;
-
     private Position camera1Position = new Position(DistanceUnit.INCH,0.0,1.0,0.0,0);
     YawPitchRollAngles camera1Orientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 25.0, 0.0, 0);
 
-    private EvictingArray<Boolean> redAudience = new EvictingArray<Boolean>(10);
-    private EvictingArray<Boolean> redScoring = new EvictingArray<Boolean>(10);
-    private EvictingArray<Boolean> blueAudience = new EvictingArray<Boolean>(10);
-    private EvictingArray<Boolean> blueScoring = new EvictingArray<Boolean>(10);
-    private enum HivePosition
-    {NA, UP, DOWN};
-    private int redAudienceCount = 0;
-    private int redScoringCount = 0;
-    private int blueAudienceCount = 0;
-    private int blueScoringCount = 0;
+    private int redHive = 0;
+    private int blueHive = 0;
+
+    public enum HivePosition{NA, AUDIENCE, SCORING};
+    public HivePosition redHivePosition = HivePosition.NA;
+    public HivePosition blueHivePosition = HivePosition.NA;
 
     //@Override
     public CameraFunctions(HardwareMap hardwareMap, OpMode opModeIn)
@@ -138,22 +131,16 @@ public class CameraFunctions
 
     }
 
-    public void checkHivePosition()
+    public HivePosition checkHivePosition(ExtraOpModeFunctions.TeamColor teamColor)
     {
         List<AprilTagDetection> currentDetections = null;
         currentDetections = aprilTag.getDetections();
         opMode.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
-        Boolean redAudienceFound = Boolean.FALSE;
-        Boolean redScoringFound = Boolean.FALSE;
-        Boolean blueAudienceFound = Boolean.FALSE;
-        Boolean blueScoringFound = Boolean.FALSE;
-
-        HivePosition redAudiencePosition = HivePosition.NA;
-        HivePosition redScoringPosition = HivePosition.NA;
-        HivePosition blueAudiencePosition = HivePosition.NA;
-        HivePosition blueScoringPosition = HivePosition.NA;
-
+        if(redHive > 0) {redHive -= 1;}
+        else if(redHive < 0) {redHive += 1;}
+        if(blueHive > 0) {blueHive -= 1;}
+        else if(blueHive < 0) {blueHive += 1;}
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections)
@@ -169,27 +156,23 @@ public class CameraFunctions
                 opMode.telemetry.addLine(String.format("\n==== Tag Cluster (%s)", tagName));
                 if(tagName.matches("RED AUDIENCE"))
                 {
-                    redAudienceFound = Boolean.TRUE;
-                    if(detection.ftcPose.z > 10.0){redAudiencePosition = HivePosition.UP;}
-                    else if(detection.ftcPose.z < -10.0){redAudiencePosition = HivePosition.DOWN;}
+                    if(detection.ftcPose.z > 10.0){redHive += 2;}
+                    else if(detection.ftcPose.z < -10.0){redHive -= 2;}
                 }
                 else if(tagName.matches("RED SCORING"))
                 {
-                    redScoringFound = Boolean.TRUE;
-                    if(detection.ftcPose.z > 10.0){redScoringPosition = HivePosition.UP;}
-                    if(detection.ftcPose.z < -10.0){redScoringPosition = HivePosition.DOWN;}
+                    if(detection.ftcPose.z > 10.0){redHive -= 2;}
+                    else if(detection.ftcPose.z < -10.0){redHive += 2;}
                 }
                 else if(tagName.matches("BLUE AUDIENCE"))
                 {
-                    blueAudienceFound = Boolean.TRUE;
-                    if(detection.ftcPose.z > 10.0){blueAudiencePosition = HivePosition.UP;}
-                    if(detection.ftcPose.z < -10.0){blueAudiencePosition = HivePosition.DOWN;}
+                    if(detection.ftcPose.z > 10.0){blueHive += 2;}
+                    if(detection.ftcPose.z < -10.0){blueHive -= 2;}
                 }
                 else if(tagName.matches("BLUE SCORING"))
                 {
-                    blueScoringFound = Boolean.TRUE;
-                    if(detection.ftcPose.z > 10.0){blueScoringPosition = HivePosition.UP;}
-                    if(detection.ftcPose.z < -10.0){blueScoringPosition = HivePosition.DOWN;}
+                    if(detection.ftcPose.z > 10.0){blueHive -= 2;}
+                    if(detection.ftcPose.z < -10.0){blueHive += 2;}
                 }
 
                 //opMode.telemetry.addLine(String.format("Percent tags found: %d", clusterDet.percentClusterFound));
@@ -199,11 +182,23 @@ public class CameraFunctions
             }
         }   // end for() loop
 
-        redAudience.add(redAudienceFound);
-        redScoring.add(redScoringFound);
-        blueAudience.add(blueAudienceFound);
-        blueScoring.add(blueScoringFound);
+        if(redHive == 0)
+            redHivePosition = HivePosition.NA;
+        else if(redHive > 0)
+            redHivePosition = HivePosition.AUDIENCE;
+        else
+            redHivePosition = HivePosition.SCORING;
+        if(blueHive == 0)
+            blueHivePosition = HivePosition.NA;
+        else if(redHive > 0)
+            blueHivePosition = HivePosition.AUDIENCE;
+        else
+            blueHivePosition = HivePosition.SCORING;
 
-    }   // end method telemetryAprilTag()
+        if(teamColor == ExtraOpModeFunctions.TeamColor.RED)
+            return(redHivePosition);
+        else
+            return(blueHivePosition);
+    }   // end method checkHivePosition()
 
 }   // end class

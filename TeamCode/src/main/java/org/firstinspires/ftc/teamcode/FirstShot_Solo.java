@@ -23,6 +23,7 @@ public class FirstShot_Solo extends OpMode
 {
     private Follower follower;
     private ExtraOpModeFunctions extras;
+    private CameraFunctions cameraFunctions;
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private enum LeftRight
@@ -37,6 +38,7 @@ public class FirstShot_Solo extends OpMode
 
         follower = Constants.create(hardwareMap);
         extras = new ExtraOpModeFunctions(hardwareMap);
+        cameraFunctions = new CameraFunctions(hardwareMap, this);
     }
 
     @Override
@@ -55,10 +57,16 @@ public class FirstShot_Solo extends OpMode
         }
         telemetry.addData("Startposition (LT): ", startorientation);
         telemetry.update();
+
+        if (gamepad1.dpad_down) {
+            visionPortal.stopStreaming();
+        } else if (gamepad1.dpad_up) {
+            visionPortal.resumeStreaming();
+        }
+
          */
+
     }
-
-
 
     private final Pose path1Start = poseFactory.of(87.5, 134, 270);
     private final Pose point1 = poseFactory.of(87.5, 133.5, 270);
