@@ -90,7 +90,7 @@ public class FirstShot_Solo extends OpMode
         Path path8 = Paths.line(point6, point7).linear(point6, point7); // Move to shooting zone on the other side
         Path path9 = Paths.line(point7, point9).linear(point7, point9); // turn to flower to pick up
         Path path10 = Paths.line(point9, point7).linear(point9, point7); // turn back to shoot pollen from the flower
-        Path path11 = Paths.line(point7, point10).linear(point7, point10); // start heading back
+        Path path11 = Paths.line(point7, point6).linear(point7, point6); // start heading back
         //Path path12 = Paths.line(point6, point10).linear(point6, point10); // back on the other side
 
 
@@ -103,15 +103,17 @@ public class FirstShot_Solo extends OpMode
                 follow(follower, path2),
                 follow(follower, path3),
                 waitMs(1000),
+                //extras.IntakeOff,
                 follow(follower, path4),
                 follow(follower, path5),
-                instant(() -> extras.ballStopOff()),
-                extras.IntakeForward,
+                //instant(() -> extras.ballStopOff()),
+                //extras.IntakeForward,
                 waitMs(1000),
                 follow(follower, path6),
                 waitMs(3000),
                 follow(follower, path7),
                 waitMs(2000),
+                extras.IntakeForward,
                 instant(() -> extras.ballStopOff()),
                 follow(follower, path8),
                 instant(() -> extras.ballStopOn()),
@@ -119,7 +121,7 @@ public class FirstShot_Solo extends OpMode
                 follow(follower, path9),
                 waitMs(2000),
                 follow(follower, path10),
-                follow(follower, path11),  //Put it back in
+                //follow(follower, path11),  //Put it back in
                 //follow(follower, path12) // put back in
                 extras.IntakeOff
 
