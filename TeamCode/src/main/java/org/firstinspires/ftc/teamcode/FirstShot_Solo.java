@@ -39,33 +39,43 @@ public class FirstShot_Solo extends OpMode
         follower = Constants.create(hardwareMap);
         extras = new ExtraOpModeFunctions(hardwareMap);
         cameraFunctions = new CameraFunctions(hardwareMap, this);
+        cameraFunctions.stopStreaming();
     }
 
     @Override
     public void init_loop()
     {
-        /*
-        if (gamepad2.left_trigger_pressed)
+        // select the color
+        telemetry.addLine("X to switch color");
+        telemetry.addData("Color: ", extras.teamColor);
+        if(gamepad1.xWasPressed())
         {
-            if (startorientation == LeftRight.LEFT)
+            if(extras.teamColor == ExtraOpModeFunctions.TeamColor.BLUE)
+                extras.teamColor = ExtraOpModeFunctions.TeamColor.RED;
+            else
+                extras.teamColor = ExtraOpModeFunctions.TeamColor.BLUE;
+        }
+
+        // turn on/off streaming and check the hive position if on
+        if(cameraFunctions.isStreamingOn())
+        {
+            telemetry.addLine("Y to turn OFF streaming");
+            telemetry.addData("Hive Position: ", cameraFunctions.checkHivePosition(extras.teamColor));
+            if(gamepad1.yWasPressed())
             {
-                startorientation = LeftRight.RIGHT;
-            } else
-            {
-                startorientation = LeftRight.LEFT;
+                cameraFunctions.stopStreaming();
             }
         }
-        telemetry.addData("Startposition (LT): ", startorientation);
-        telemetry.update();
-
-        if (gamepad1.dpad_down) {
-            visionPortal.stopStreaming();
-        } else if (gamepad1.dpad_up) {
-            visionPortal.resumeStreaming();
+        else
+        {
+            telemetry.addLine("Y to turn ON streaming");
+            if(gamepad1.yWasPressed())
+            {
+                cameraFunctions.resumeStreaming();
+            }
         }
 
-         */
-
+        telemetry.update();
     }
 
     private final Pose path1Start = poseFactory.of(87.5, 134, 270);
@@ -83,9 +93,15 @@ public class FirstShot_Solo extends OpMode
     //private final Pose point11 = poseFactory.of(85.2361, 131.9936, -92.8776);
 
 
+    // initial path - shoot, pick up corner
+    // shoot again
+    // shoot other side
+
     @Override
     public void start()
     {
+        cameraFunctions.resumeStreaming();
+
         follower.setPose(path1Start);
         follower.update();
         Path path1 = Paths.line(path1Start, point1).linear(path1Start, point1); // move forward to shoot
@@ -136,15 +152,20 @@ public class FirstShot_Solo extends OpMode
 
         );
 
+        //firstSequence.schedule();
         schedule(firstSequence);
 
         extras.setLauncherTargetSpeed(2500);
     }
 
 
+    CameraFunctions.HivePosition hivePosition = CameraFunctions.HivePosition.NA;
     @Override
     public void loop()
     {
+        hivePosition = cameraFunctions.checkHivePosition(extras.teamColor);
+        telemetry.addData("Hive Position: ", hivePosition);
+
         // recalc and update the launcher speed each time through the loop
         telemetry.addData("Launcher Target Speed: ", extras.getLauncherTargetSpeed());
         telemetry.addData("Launcher Set Speed: ", extras.updateLauncherSpeed());
@@ -153,12 +174,14 @@ public class FirstShot_Solo extends OpMode
 
         follower.update();
         Scheduler.execute();
+
         // add your other methods needed in the loop here
 
         telemetry.addData("X", follower.pose().x());
         telemetry.addData("Y", follower.pose().y());
         telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
         telemetry.addData("Follower Mode", follower.mode());
+
         telemetry.update();
     }
 }

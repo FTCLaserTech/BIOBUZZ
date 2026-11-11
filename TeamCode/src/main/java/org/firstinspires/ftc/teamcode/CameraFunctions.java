@@ -131,6 +131,25 @@ public class CameraFunctions
 
     }
 
+    private boolean streamingOn = true;
+
+    public boolean isStreamingOn()
+    {
+        return(streamingOn);
+    }
+
+    public void resumeStreaming()
+    {
+        visionPortal.resumeStreaming();
+        streamingOn = true;
+    }
+
+    public void stopStreaming()
+    {
+        visionPortal.stopStreaming();
+        streamingOn = false;
+    }
+
     public HivePosition checkHivePosition(ExtraOpModeFunctions.TeamColor teamColor)
     {
         List<AprilTagDetection> currentDetections = null;
