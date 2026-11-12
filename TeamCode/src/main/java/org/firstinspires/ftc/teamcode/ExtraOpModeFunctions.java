@@ -20,7 +20,7 @@ public class ExtraOpModeFunctions
 
     public enum RobotStartPosition {STRAIGHT, LEFT, RIGHT};
     public enum TeamColor{RED,BLUE};
-    public TeamColor teamColor = TeamColor.RED;
+    public TeamColor teamColor = TeamColor.BLUE;
 
     public static final double PI = 3.14159265;
 
