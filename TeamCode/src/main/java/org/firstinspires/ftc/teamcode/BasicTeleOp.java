@@ -130,14 +130,22 @@ public class BasicTeleOp extends OpMode
         /*
         Drive
         */
-        DrivePowers powers = ManualDrive.fieldCentric(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                follower.pose().heading()
-        );
-        follower.manual(powers);
-        follower.update();
+        if(false) // false = robot centric; true = field centric
+        {
+            DrivePowers powers = ManualDrive.fieldCentric(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
+                    follower.pose().heading()
+            );
+            follower.manual(powers);
+            follower.update();
+        }
+        else
+        {
+            follower.manual(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            follower.update();
+        }
 
         /*
         Launcher
