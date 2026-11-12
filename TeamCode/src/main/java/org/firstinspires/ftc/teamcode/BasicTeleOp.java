@@ -20,6 +20,7 @@ public class BasicTeleOp extends OpMode
     private ElapsedTime runtime = new ElapsedTime();
     private Follower follower;
     private ExtraOpModeFunctions extras;
+    private CameraFunctions cameraFunctions;
 
     public static double headingScaler = 3.0;
     public static double positionScalerAim = 10.0;
@@ -48,6 +49,7 @@ public class BasicTeleOp extends OpMode
 
         follower = Constants.create(hardwareMap);
         extras = new ExtraOpModeFunctions(hardwareMap);
+        cameraFunctions = new CameraFunctions(hardwareMap, this);
 
 
         /*
@@ -75,7 +77,37 @@ public class BasicTeleOp extends OpMode
     @Override
     public void init_loop()
     {
-        ;
+        // select the color
+        telemetry.addLine("X to switch color");
+        telemetry.addData("Color: ", extras.teamColor);
+        if(gamepad1.xWasPressed())
+        {
+            if(extras.teamColor == ExtraOpModeFunctions.TeamColor.BLUE)
+                extras.teamColor = ExtraOpModeFunctions.TeamColor.RED;
+            else
+                extras.teamColor = ExtraOpModeFunctions.TeamColor.BLUE;
+        }
+
+        // turn on/off streaming and check the hive position if on
+        if(cameraFunctions.isStreamingOn())
+        {
+            telemetry.addLine("Y to turn OFF streaming");
+            telemetry.addData("Hive Position: ", cameraFunctions.checkHivePosition(extras.teamColor));
+            if(gamepad1.yWasPressed())
+            {
+                cameraFunctions.stopStreaming();
+            }
+        }
+        else
+        {
+            telemetry.addLine("Y to turn ON streaming");
+            if(gamepad1.yWasPressed())
+            {
+                cameraFunctions.resumeStreaming();
+            }
+        }
+
+        telemetry.update();
     }
 
     /*

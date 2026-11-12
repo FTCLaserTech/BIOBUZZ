@@ -34,6 +34,7 @@ import android.util.Size;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -98,6 +99,8 @@ public class CameraFunctions
     //@Override
     public CameraFunctions(HardwareMap hardwareMap, OpMode opModeIn)
     {
+        ElapsedTime runTime = new ElapsedTime();
+
         opMode = opModeIn;
 
         // Create the AprilTag processor by using a builder.
@@ -115,16 +118,22 @@ public class CameraFunctions
                 .addProcessor(aprilTag)
                 .build();
 
+        resumeStreaming();
+
         // Set Exposure and Gain.
-        exposure = 2;
+        exposure = 5;
         gain = 50;
         ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         exposureControl.setMode(ExposureControl.Mode.Manual);
         exposureControl.setExposure((long)exposure, TimeUnit.MILLISECONDS);
         //opMode.wait(20);
+        runTime.reset();
+        while (runTime.milliseconds() < 20);
         GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
         gainControl.setGain(gain);
         //opMode.wait(20);
+        runTime.reset();
+        while (runTime.milliseconds() < 20);
 
         // Save more CPU resources when camera is no longer needed.
         //visionPortal.close();
