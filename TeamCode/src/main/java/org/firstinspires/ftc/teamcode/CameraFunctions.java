@@ -165,6 +165,10 @@ public class CameraFunctions
         currentDetections = aprilTag.getDetections();
         opMode.telemetry.addData("# AprilTags Detected", currentDetections.size());
 
+        if(redHive > 20) {redHive = 20;}
+        if(redHive < -20) {redHive = -20;}
+        if(blueHive > 20) {blueHive = 20;}
+        if(blueHive < -20) {blueHive = -20;}
         if(redHive > 0) {redHive -= 1;}
         else if(redHive < 0) {redHive += 1;}
         if(blueHive > 0) {blueHive -= 1;}
