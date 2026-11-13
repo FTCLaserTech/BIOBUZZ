@@ -122,60 +122,67 @@ public class FirstShot_Solo extends OpMode
 
      */
 
-    Command stayshoot = sequential(
-            instant(() -> extras.ballStopOff()),
-            //extras.IntakeForward,
-            waitMs(2000),
-            instant(() -> extras.ballStopOn())
-    );
-
-    Command underHive = sequential(
-            follow(follower, path5),
-            follow(follower, path6),
-            waitMs(3000),
-            follow(follower, path7),
-            waitMs(2000),
-            //extras.IntakeForward,
-            instant(() -> extras.ballStopOff()),
-            follow(follower, path8),
-            instant(() -> extras.ballStopOn()),
-            waitMs(2000),
-            follow(follower, path9),
-            waitMs(2000),
-            follow(follower, path10),
-            //follow(follower, path11),  //Put it back in
-            //follow(follower, path12) // put back in
-            extras.IntakeOff
-    );
-
-
-    EnumMap<CameraFunctions.HivePosition, Command> hiveCases = new EnumMap<>(Map.of(
-            CameraFunctions.HivePosition.SCORING, stayshoot,
-            CameraFunctions.HivePosition.NA, underHive,
-            CameraFunctions.HivePosition.AUDIENCE, underHive
-    ));
-
-    Command checkhiveposition = match(() -> cameraFunctions.checkHivePosition(extras.teamColor), hiveCases);
-
-    Command firstSequence = sequential(
-            follow(follower, path1),
-            instant(() -> extras.ballStopOff()),
-            //extras.IntakeForward,
-            waitMs(2000),
-            instant(() -> extras.ballStopOn()),
-            follow(follower, path2),
-            follow(follower, path3),
-            waitMs(1000),
-            follow(follower, path4),
-            checkhiveposition
-    );
-
-
     @Override
     public void start()
     {
         cameraFunctions.resumeStreaming();
 
+        Command stayshoot = sequential(
+                instant(() -> extras.ballStopOff()),
+                //extras.IntakeForward,
+                waitMs(2000),
+                instant(() -> extras.ballStopOn())
+        );
+
+        Command underHive = sequential(
+                follow(follower, path5),
+                follow(follower, path6),
+                waitMs(3000),
+                follow(follower, path7),
+                waitMs(2000),
+                //extras.IntakeForward,
+                instant(() -> extras.ballStopOff()),
+                follow(follower, path8),
+                instant(() -> extras.ballStopOn()),
+                waitMs(2000),
+                follow(follower, path9),
+                waitMs(2000),
+                follow(follower, path10),
+                //follow(follower, path11),  //Put it back in
+                //follow(follower, path12) // put back in
+                extras.IntakeOff
+        );
+
+
+        EnumMap<CameraFunctions.HivePosition, Command> hiveCases = new EnumMap<>(Map.of(
+                CameraFunctions.HivePosition.SCORING, stayshoot,
+                CameraFunctions.HivePosition.NA, underHive,
+                CameraFunctions.HivePosition.AUDIENCE, underHive
+        ));
+
+        Command checkhiveposition = match(() -> cameraFunctions.checkHivePosition(extras.teamColor), hiveCases);
+
+        Command firstSequence = sequential(
+                follow(follower, path1),
+                instant(() -> extras.ballStopOff()),
+                //extras.IntakeForward,
+                waitMs(2000),
+                instant(() -> extras.ballStopOn()),
+                follow(follower, path2),
+                follow(follower, path3),
+                waitMs(1000),
+                follow(follower, path4),
+                checkhiveposition
+        );
+        /*
+        if (hivePosition == CameraFunctions.HivePosition.SCORING)
+        {
+            schedule(stayshoot);
+        }
+        else {
+            schedule(underHive);
+        }
+        */
         follower.setPose(path1Start);
         follower.update();
         //firstSequence.schedule();
