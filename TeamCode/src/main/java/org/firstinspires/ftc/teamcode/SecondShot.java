@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 public class SecondShot extends OpMode
 {
     private Follower follower;
-    private ExtraOpModeFunctions extras;
+    private Robot robot;
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private enum LeftRight
@@ -37,7 +37,7 @@ public class SecondShot extends OpMode
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        extras = new ExtraOpModeFunctions(hardwareMap);
+        robot = new Robot(hardwareMap);
     }
 
     @Override
@@ -88,10 +88,9 @@ public class SecondShot extends OpMode
                 // move to line and pickup artifacts
 
                 follow(follower, path1),
-                instant(() -> extras.ballStopOff()),
-                extras.IntakeForward,
+                instant(() -> robot.ballsShoot()),
                 waitMs(2000),
-                instant(() -> extras.ballStopOn()),
+                instant(() -> robot.ballsStop()),
                 // turn off intake
                 // move back to shooting position
                 follow(follower, path2),
@@ -99,11 +98,9 @@ public class SecondShot extends OpMode
                 waitMs(1000),
                 follow(follower, path4),
                 follow(follower, path5),
-                instant(() -> extras.ballStopOff()),
-                extras.IntakeForward,
+                instant(() -> robot.ballsIntake()),
                 waitMs(1000),
-                extras.IntakeOff
-
+                instant(() -> robot.ballsStop())
 
         );
 
@@ -112,7 +109,7 @@ public class SecondShot extends OpMode
 
         schedule(firstSequence);
 
-        extras.setLauncherTargetSpeed(2500);
+        robot.setLauncherTargetSpeed(2500);
     }
 
 
@@ -120,10 +117,9 @@ public class SecondShot extends OpMode
     public void loop()
     {
         // recalc and update the launcher speed each time through the loop
-        telemetry.addData("Launcher Target Speed: ", extras.getLauncherTargetSpeed());
-        telemetry.addData("Launcher Set Speed: ", extras.updateLauncherSpeed());
-        telemetry.addData("Launcher Actual Speed: ", extras.getLauncherSpeed());
-        //extras.updateLauncherSpeed();
+        robot.updateLauncher();
+        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetSpeed());
+        telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualSpeed());
 
         follower.update();
         Scheduler.execute();

@@ -43,7 +43,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.helpers.EvictingArray;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagClusterDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -159,7 +158,7 @@ public class CameraFunctions
         streamingOn = false;
     }
 
-    public HivePosition checkHivePosition(ExtraOpModeFunctions.TeamColor teamColor)
+    public HivePosition checkHivePosition(Robot.TeamColor teamColor)
     {
         List<AprilTagDetection> currentDetections = null;
         currentDetections = aprilTag.getDetections();
@@ -227,7 +226,7 @@ public class CameraFunctions
         else
             blueHivePosition = HivePosition.SCORING;
 
-        if(teamColor == ExtraOpModeFunctions.TeamColor.RED)
+        if(teamColor == Robot.TeamColor.RED)
             return(redHivePosition);
         else
             return(blueHivePosition);

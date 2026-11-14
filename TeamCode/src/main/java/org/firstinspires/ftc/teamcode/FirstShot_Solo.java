@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
-import static com.pedropathing.ivy.commands.Commands.conditional;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.match;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
@@ -27,7 +26,7 @@ import java.util.Map;
 public class FirstShot_Solo extends OpMode
 {
     private Follower follower;
-    private ExtraOpModeFunctions extras;
+    private Robot robot;
     private CameraFunctions cameraFunctions;
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
@@ -42,7 +41,7 @@ public class FirstShot_Solo extends OpMode
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        extras = new ExtraOpModeFunctions(hardwareMap);
+        robot = new Robot(hardwareMap);
         cameraFunctions = new CameraFunctions(hardwareMap, this);
         cameraFunctions.stopStreaming();
     }
@@ -52,20 +51,20 @@ public class FirstShot_Solo extends OpMode
     {
         // select the color
         telemetry.addLine("X to switch color");
-        telemetry.addData("Color: ", extras.teamColor);
+        telemetry.addData("Color: ", robot.teamColor);
         if(gamepad1.xWasPressed())
         {
-            if(extras.teamColor == ExtraOpModeFunctions.TeamColor.BLUE)
-                extras.teamColor = ExtraOpModeFunctions.TeamColor.RED;
+            if(robot.teamColor == Robot.TeamColor.BLUE)
+                robot.teamColor = Robot.TeamColor.RED;
             else
-                extras.teamColor = ExtraOpModeFunctions.TeamColor.BLUE;
+                robot.teamColor = Robot.TeamColor.BLUE;
         }
 
         // turn on/off streaming and check the hive position if on
         if(cameraFunctions.isStreamingOn())
         {
             telemetry.addLine("Y to turn OFF streaming");
-            telemetry.addData("Hive Position: ", cameraFunctions.checkHivePosition(extras.teamColor));
+            telemetry.addData("Hive Position: ", cameraFunctions.checkHivePosition(robot.teamColor));
             if(gamepad1.yWasPressed())
             {
                 cameraFunctions.stopStreaming();
@@ -128,10 +127,10 @@ public class FirstShot_Solo extends OpMode
         cameraFunctions.resumeStreaming();
 
         Command stayshoot = sequential(
-                instant(() -> extras.ballStopOff()),
+                instant(() -> robot.ballsShoot()),
                 //extras.IntakeForward,
                 waitMs(2000),
-                instant(() -> extras.ballStopOn())
+                instant(() -> robot.ballsStop())
         );
 
         Command underHive = sequential(
@@ -141,16 +140,16 @@ public class FirstShot_Solo extends OpMode
                 follow(follower, path7),
                 waitMs(2000),
                 //extras.IntakeForward,
-                instant(() -> extras.ballStopOff()),
+                instant(() -> robot.ballsOuttake()),
                 follow(follower, path8),
-                instant(() -> extras.ballStopOn()),
+                instant(() -> robot.ballsStop()),
                 waitMs(2000),
                 follow(follower, path9),
                 waitMs(2000),
                 follow(follower, path10),
                 //follow(follower, path11),  //Put it back in
                 //follow(follower, path12) // put back in
-                extras.IntakeOff
+                instant(() -> robot.ballsStop())
         );
 
 
@@ -160,14 +159,14 @@ public class FirstShot_Solo extends OpMode
                 CameraFunctions.HivePosition.AUDIENCE, underHive
         ));
 
-        Command checkhiveposition = match(() -> cameraFunctions.checkHivePosition(extras.teamColor), hiveCases);
+        Command checkhiveposition = match(() -> cameraFunctions.checkHivePosition(robot.teamColor), hiveCases);
 
         Command firstSequence = sequential(
                 follow(follower, path1),
-                instant(() -> extras.ballStopOff()),
+                instant(() -> robot.ballsShoot()),
                 //extras.IntakeForward,
                 waitMs(2000),
-                instant(() -> extras.ballStopOn()),
+                instant(() -> robot.ballsStop()),
                 follow(follower, path2),
                 follow(follower, path3),
                 waitMs(1000),
@@ -188,7 +187,7 @@ public class FirstShot_Solo extends OpMode
         //firstSequence.schedule();
         schedule(firstSequence);
 
-        extras.setLauncherTargetSpeed(2500);
+        robot.setLauncherTargetSpeed(2500);
     }
 
 
@@ -196,19 +195,18 @@ public class FirstShot_Solo extends OpMode
     @Override
     public void loop()
     {
-        hivePosition = cameraFunctions.checkHivePosition(extras.teamColor);
+        hivePosition = cameraFunctions.checkHivePosition(robot.teamColor);
         telemetry.addData("Hive Position: ", hivePosition);
 
         // recalc and update the launcher speed each time through the loop
-        telemetry.addData("Launcher Target Speed: ", extras.getLauncherTargetSpeed());
-        telemetry.addData("Launcher Set Speed: ", extras.updateLauncherSpeed());
-        telemetry.addData("Launcher Actual Speed: ", extras.getLauncherSpeed());
-        //extras.updateLauncherSpeed();
+        robot.updateLauncher();
+        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetSpeed());
+        telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualSpeed());
 
         follower.update();
         Scheduler.execute();
 
-        cameraFunctions.checkHivePosition(extras.teamColor);
+        cameraFunctions.checkHivePosition(robot.teamColor);
         // add your other methods needed in the loop here
 
         telemetry.addData("X", follower.pose().x());

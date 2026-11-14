@@ -19,7 +19,7 @@ public class BasicTeleOp extends OpMode
 {
     private ElapsedTime runtime = new ElapsedTime();
     private Follower follower;
-    private ExtraOpModeFunctions extras;
+    private Robot robot;
     private CameraFunctions cameraFunctions;
 
     public static double headingScaler = 3.0;
@@ -48,7 +48,7 @@ public class BasicTeleOp extends OpMode
         //telemetry.addData("Status", "Initializing");
 
         follower = Constants.create(hardwareMap);
-        extras = new ExtraOpModeFunctions(hardwareMap);
+        robot = new Robot(hardwareMap);
         cameraFunctions = new CameraFunctions(hardwareMap, this);
 
 
@@ -79,20 +79,20 @@ public class BasicTeleOp extends OpMode
     {
         // select the color
         telemetry.addLine("X to switch color");
-        telemetry.addData("Color: ", extras.teamColor);
+        telemetry.addData("Color: ", robot.teamColor);
         if(gamepad1.xWasPressed())
         {
-            if(extras.teamColor == ExtraOpModeFunctions.TeamColor.BLUE)
-                extras.teamColor = ExtraOpModeFunctions.TeamColor.RED;
+            if(robot.teamColor == Robot.TeamColor.BLUE)
+                robot.teamColor = Robot.TeamColor.RED;
             else
-                extras.teamColor = ExtraOpModeFunctions.TeamColor.BLUE;
+                robot.teamColor = Robot.TeamColor.BLUE;
         }
 
         // turn on/off streaming and check the hive position if on
         if(cameraFunctions.isStreamingOn())
         {
             telemetry.addLine("Y to turn OFF streaming");
-            telemetry.addData("Hive Position: ", cameraFunctions.checkHivePosition(extras.teamColor));
+            telemetry.addData("Hive Position: ", cameraFunctions.checkHivePosition(robot.teamColor));
             if(gamepad1.yWasPressed())
             {
                 cameraFunctions.stopStreaming();
@@ -118,7 +118,7 @@ public class BasicTeleOp extends OpMode
     {
         runtime.reset();
 
-        extras.setLauncherTargetSpeed(500);
+        //extras.setLauncherTargetSpeed(500);
     }
 
     /*
@@ -177,69 +177,36 @@ public class BasicTeleOp extends OpMode
                 launcherVelocity = 0.0;
             }
         }
-        extras.setLauncherTargetSpeed(launcherVelocity);
+        robot.setLauncherTargetSpeed(launcherVelocity);
 
         // recalc and update the launcher speed each time through the loop
-        telemetry.addData("Launcher Target Speed: ", extras.getLauncherTargetSpeed());
-        telemetry.addData("Launcher Set Speed: ", extras.updateLauncherSpeed());
-        telemetry.addData("Launcher Actual Speed: ", extras.getLauncherSpeed());
-        //extras.updateLauncherSpeed();
+        robot.updateLauncher();
+        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetSpeed());
+        telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualSpeed());
 
         /*
         Intake and Ballstop
         */
         if (gamepad1.right_bumper)
         {
-            extras.setBallStop(ExtraOpModeFunctions.BallStopStates.OFF);
-            extras.setIntake(ExtraOpModeFunctions.IntakeStates.REVERSE);
+            robot.ballsIntake();
         }
         else if (gamepad1.right_trigger > 0)
         {
-
-            extras.setIntake(ExtraOpModeFunctions.IntakeStates.FORWARD_SLOW);
-            extras.setBallStop(ExtraOpModeFunctions.BallStopStates.OFF);
+            robot.ballsShoot();
 
         }
         else if (gamepad1.left_trigger > 0)
         {
-            extras.setIntake(ExtraOpModeFunctions.IntakeStates.FORWARD);
-            extras.setBallStop(ExtraOpModeFunctions.BallStopStates.ON);
-
+            robot.ballsOuttake();
         }
         else
         {
-            extras.setIntake(ExtraOpModeFunctions.IntakeStates.OFF);
-        }
-
-        /*
-        Elevator
-        */
-        if (gamepad1.aWasPressed())
-        {
-            extras.elevatorup();
-        }
-        if (gamepad1.bWasPressed())
-        {
-            extras.elevatordown();
-        }
-
-        /*
-        claw
-        */
-
-        if(gamepad1.y)
-        {
-            extras.clawopen();
-        }
-        else
-        {
-            extras.clawclose();
+            robot.ballsStop();
         }
 
         //telemetry.addData("Launcher On: ", launcherOn);
 
-
-        telemetry.addData("Elevator position: ", extras.elevator.getCurrentPosition());
         //telemetry.addData("launcher target velocity: ", launcherVelocity);
         //telemetry.addData("launcher1 velocity: ", extras.launcher1.getVelocity());
         //telemetry.addData("launcher2 velocity: ", extras.launcher2.getVelocity());
