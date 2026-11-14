@@ -246,7 +246,7 @@ public class CalibrateCameras extends LinearOpMode {
                 .build();
 
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
-        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
+        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 1");
         CameraName switchableCamera = ClassFactory.getInstance()
             .getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
 

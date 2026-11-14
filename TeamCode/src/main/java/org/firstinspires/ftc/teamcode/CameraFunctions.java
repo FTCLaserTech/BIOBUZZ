@@ -120,7 +120,7 @@ public class CameraFunctions
         resumeStreaming();
 
         // Set Exposure and Gain.
-        exposure = 5;
+        exposure = 3;
         gain = 50;
         ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
         exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -221,7 +221,7 @@ public class CameraFunctions
             redHivePosition = HivePosition.SCORING;
         if(blueHive == 0)
             blueHivePosition = HivePosition.NA;
-        else if(redHive > 0)
+        else if(blueHive > 0)
             blueHivePosition = HivePosition.AUDIENCE;
         else
             blueHivePosition = HivePosition.SCORING;
