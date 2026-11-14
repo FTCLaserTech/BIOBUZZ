@@ -9,22 +9,20 @@ public class Launcher
 {
     private DcMotorEx launcher1;
     private DcMotorEx launcher2;
+    private double targetRPM = 0.0;
+    private double motorPower = 0.0;
 
     double maxLauncherRPM = 4500.0;  //RPM
     double launcherTicksPerRev = 28.0;
     double maxLauncherTPS = launcherTicksPerRev * maxLauncherRPM / 60; // 2800
     //private double shooterTargetVelocity = 0.0;
 
-    public static double kP = 0.00001;
-    public static double kI = 0.0;
-    public static double kD = 0.0;
     public static double kS = 0.0;
     public static double kV = 0.00042;
+    public static double bbTolerance = 0.0;
 
-    private Controller launcherPID = Controller.pid(kP, kI, kD);
     private Controller launcherSFF = Controller.staticFeedforward(kS);
     private Controller launcherPFF = Controller.proportionalFeedforward(kV);
-    private Controller launcherController = launcherPID.plus(launcherSFF).plus(launcherPFF);
 
     private double launcherTargetSpeed = 0.0;
 
@@ -45,33 +43,38 @@ public class Launcher
         launcher2.setVelocity(0.0);
         //launcher2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //launcher2.setPower(0.0);
-
     }
 
-    public double updateLauncherSpeed()
+    public double updateLauncher()
     {
-        launcherPID = Controller.pid(kP, kI, kD);
+        double launcherActualRPM = getLauncherActualRPM();
+
+        // Feed forward controller
         launcherSFF = Controller.staticFeedforward(kS);
         launcherPFF = Controller.proportionalFeedforward(kV);
-        launcherController = launcherPID.plus(launcherSFF).plus(launcherPFF);
+        Controller launcherController = launcherSFF.plus(launcherPFF);
+        double ffPower = launcherController.calculate(targetRPM, launcherActualRPM);
 
-        //double power = launcherController.calculate(getLauncherSpeed(), launcherTargetSpeed);
-        double power = launcherController.calculate(launcherTargetSpeed, getLauncherSpeed());
+        // bang-bang controller
+        double bbPower = 0;
+        if(targetRPM<(launcherActualRPM*bbTolerance))
+        {
+            bbPower = 1;
+        }
 
-        /*
-        double power = launcherController.calculate(new KineticState(
-                launcher1.getCurrentPosition(),
-                launcher1.getVelocity()
-        ));
-        // clip power to -1 to +1 range
-        */
+        motorPower = ffPower + bbPower;
 
-        launcher1.setPower(power);
-        launcher2.setPower(power);
+        if(motorPower>1.0)
+            motorPower = 1.0;
+        else if (motorPower<-1.0)
+            motorPower = -1.0;
+
+        launcher1.setPower(motorPower);
+        launcher2.setPower(motorPower);
         //launcher1.setPower(0.0);
         //launcher2.setPower(0.0);
 
-        return(power);
+        return(motorPower);
     }
 
     public double getLauncherActualSpeed()
@@ -100,36 +103,33 @@ public class Launcher
         return(launcherTargetSpeed);
     }
 
-    public double setLauncherSpeed()
+    public void setLauncherTargetRPM(double targetRPM)
     {
-        launcherPID = Controller.pid(kP, kI, kD);
-        launcherSFF = Controller.staticFeedforward(kS);
-        launcherPFF = Controller.proportionalFeedforward(kV);
-        launcherController = launcherPID.plus(launcherSFF).plus(launcherPFF);
-
-        //double power = launcherController.calculate(getLauncherSpeed(), launcherTargetSpeed);
-        double power = launcherController.calculate(launcherTargetSpeed, getLauncherSpeed());
-
-        /*
-        double power = launcherController.calculate(new KineticState(
-                launcher1.getCurrentPosition(),
-                launcher1.getVelocity()
-        ));
-        // clip power to -1 to +1 range
-        */
-
-        launcher1.setPower(power);
-        launcher2.setPower(power);
-        //launcher1.setPower(0.0);
-        //launcher2.setPower(0.0);
-
-        return(power);
+        if(targetRPM > maxLauncherRPM)
+        {
+            this.targetRPM = maxLauncherRPM;
+        }
+        else
+        {
+            this.targetRPM = targetRPM;
+        }
     }
 
-    public double getLauncherSpeed()
+    public double getLauncherTargetRPM()
+    {
+        return(targetRPM);
+    }
+
+    public double getLauncherActualRPM()
     {
         //return(0);
-        return((launcher1.getVelocity() + launcher2.getVelocity())/2);
+        return((tps2rpm(launcher1.getVelocity()) + tps2rpm(launcher2.getVelocity()))/2);
+    }
+
+    public double tps2rpm(double tps)
+    {
+
+        return(tps/launcherTicksPerRev*60);
     }
 
 }

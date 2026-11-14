@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.robot.Ballstop;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.Launcher;
+import org.firstinspires.ftc.teamcode.robot.Turret;
 
 //import dev.nextftc.control.feedforward.SimpleFeedforward;
 //import dev.nextftc.control.feedback.PIDController;
@@ -24,7 +25,7 @@ public class Robot
     private static Launcher launcher;
     private static Intake intake;
     private static Ballstop ballStop;
-    //private static Turret turret;
+    private static Turret turret;
 
     //public SimpleFeedforward launcherController = new SimpleFeedforward(0.00042, 0.0, 0.0);
 
