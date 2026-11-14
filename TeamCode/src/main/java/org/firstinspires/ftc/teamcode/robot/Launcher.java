@@ -12,8 +12,12 @@ public class Launcher
     private double targetRPM = 0.0;
     private double motorPower = 0.0;
 
+
+    private double motorGear = 20.0;
+    private double flywheelGear = 30.0;
+
     double maxLauncherRPM = 4500.0;  //RPM
-    double launcherTicksPerRev = 28.0;
+    double launcherTicksPerRev = 28.0; // Gobilda 5203 - 6000
     double maxLauncherTPS = launcherTicksPerRev * maxLauncherRPM / 60; // 2800
     //private double shooterTargetVelocity = 0.0;
 
@@ -57,7 +61,7 @@ public class Launcher
 
         // bang-bang controller
         double bbPower = 0;
-        if(targetRPM<(launcherActualRPM*bbTolerance))
+        if(launcherActualRPM<(targetRPM*bbTolerance))
         {
             bbPower = 1;
         }
@@ -129,7 +133,12 @@ public class Launcher
     public double tps2rpm(double tps)
     {
 
-        return(tps/launcherTicksPerRev*60);
+        return(tps/launcherTicksPerRev*60/motorGear*flywheelGear);
+    }
+
+    public double rpm2tps(double rpm)
+    {
+        return(rpm*launcherTargetSpeed/60*motorGear/flywheelGear);
     }
 
 }
