@@ -17,10 +17,10 @@ public class ShooterTester2 extends OpMode
 
     private Launcher launcher;
 
-    public static double launcherRPMIncrement = 1.0;
+    public static double launcherRPMIncrement = 10.0;
 
     double targetLauncherRPM = 0.0;
-    double storedlauncherVelocity = 0.8;
+    double storedlauncherVelocity = 700.0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -88,7 +88,10 @@ public class ShooterTester2 extends OpMode
         telemetry.addLine("Dpad Up/Down: Faster/Slower");
         telemetry.addData("Launcher Target Speed: ", targetLauncherRPM);
         telemetry.addData("Launcher Actual Speed: ", launcher.getLauncherActualRPM());
+        telemetry.addData("Launcher Actual Speed Avg: ", launcher.getLauncherActualRPMAvergae());
         telemetry.addData("Launcher Motor Power: ", motorPower);
+        telemetry.addData("Launcher 1 TPS: ", launcher.launcher1TPS);
+        telemetry.addData("Launcher 2 TPS: ", launcher.launcher2TPS);
 
         telemetry.update();
     }

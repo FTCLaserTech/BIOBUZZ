@@ -14,7 +14,7 @@ import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Auto.AutoPositions;
+import org.firstinspires.ftc.teamcode.auto.AutoPositions;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import java.util.EnumMap;

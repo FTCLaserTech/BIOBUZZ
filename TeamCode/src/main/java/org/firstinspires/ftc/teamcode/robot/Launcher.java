@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class Launcher
 {
     private DcMotorEx launcher1;
@@ -22,13 +25,15 @@ public class Launcher
     //private double shooterTargetVelocity = 0.0;
 
     public static double kS = 0.0;
-    public static double kV = 0.00042;
-    public static double bbTolerance = 0.0;
+    public static double kV = 0.000296;
+    public static double bbTolerance = 0.0; //0.95;
 
     private Controller launcherSFF = Controller.staticFeedforward(kS);
     private Controller launcherPFF = Controller.proportionalFeedforward(kV);
 
     private double launcherTargetSpeed = 0.0;
+    public double launcher1TPS = 0.0;
+    public double launcher2TPS = 0.0;
 
     public Launcher(HardwareMap hardwareMap)
     {
@@ -127,18 +132,44 @@ public class Launcher
     public double getLauncherActualRPM()
     {
         //return(0);
-        return((tps2rpm(launcher1.getVelocity()) + tps2rpm(launcher2.getVelocity()))/2);
+        launcher1TPS = launcher1.getVelocity();
+        launcher2TPS = launcher2.getVelocity();
+        return(motorTPS2flywheelRPM( (launcher1TPS + launcher2TPS)/2 ));
     }
 
-    public double tps2rpm(double tps)
+    int numSamples = 100;
+    Double[] launcher1Velocities = new Double[numSamples];
+    Double[] launcher2Velocities = new Double[numSamples];
+    int index = 0;
+    public double getLauncherActualRPMAvergae()
     {
 
-        return(tps/launcherTicksPerRev*60/motorGear*flywheelGear);
+        launcher1Velocities[index] = launcher1.getVelocity();
+        launcher2Velocities[index] = launcher2.getVelocity();
+        index+=1;
+        if(index >= (numSamples-1))
+            index = 0;
+        double l1avg = Arrays.stream(launcher1Velocities)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+        double l2avg = Arrays.stream(launcher2Velocities)
+                .filter(Objects::nonNull)
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+        return(motorTPS2flywheelRPM( (l1avg + l2avg)/2 ));
     }
 
-    public double rpm2tps(double rpm)
+    public double motorTPS2flywheelRPM(double tps)
     {
-        return(rpm*launcherTargetSpeed/60*motorGear/flywheelGear);
+        return(tps/launcherTicksPerRev*60*motorGear/flywheelGear);
+    }
+
+    public double flywheelRPM2motorTPS(double rpm)
+    {
+        return(rpm*launcherTargetSpeed/60/motorGear*flywheelGear);
     }
 
 }

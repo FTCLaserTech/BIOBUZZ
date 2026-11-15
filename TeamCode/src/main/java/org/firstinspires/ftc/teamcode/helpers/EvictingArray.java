@@ -31,7 +31,7 @@ public class EvictingArray<T> {
 
     // Optional: Return elements in chronological order (oldest to newest)
     @SuppressWarnings("unchecked")
-    public T[] getAll() {
+    public T[] getAll(T[] targetArray) {
         T[] result = (T[]) new Object[size];
         for (int i = 0; i < size; i++) {
             // Find chronological start point if buffer has wrapped around

@@ -105,6 +105,7 @@ public class CameraFunctions
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder()
                 .setCameraPose(camera1Position, camera1Orientation)
+                .setSuppressCalibrationWarnings(true)
                 .build();
 
         webcam = hardwareMap.get(WebcamName.class, "Webcam 1");
