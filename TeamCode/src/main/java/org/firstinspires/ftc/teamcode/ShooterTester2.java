@@ -20,7 +20,7 @@ public class ShooterTester2 extends OpMode
     public static double launcherRPMIncrement = 10.0;
 
     double targetLauncherRPM = 0.0;
-    double storedlauncherVelocity = 700.0;
+    double storedlauncherVelocity = 1450.0;
 
     /*
      * Code to run ONCE when the driver hits INIT
