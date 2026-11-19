@@ -61,24 +61,34 @@ public class Robot
         intake.setIntake(Intake.IntakeStates.OFF);
     }
 
-    public double getLauncherTargetSpeed()
+    public double getLauncherLowRPM()
     {
-        return(launcher.getLauncherTargetSpeed());
+        return(launcher.getLauncherLowRPM());
     }
 
-    public void setLauncherTargetSpeed(double launcherSpeed)
+    public double getLauncherHighRPM()
     {
-        launcher.setLauncherTargetSpeed(launcherSpeed);
+        return(launcher.getLauncherHighRPM());
     }
 
-    public double getLauncherActualSpeed()
+    public double getLauncherTargetRPM()
     {
-        return(launcher.getLauncherActualSpeed());
+        return(launcher.getLauncherTargetRPM());
+    }
+
+    public void setLauncherTargetRPM(double launcherSpeed)
+    {
+        launcher.setLauncherTargetRPM(launcherSpeed);
+    }
+
+    public double getLauncherActualRPM()
+    {
+        return(launcher.getLauncherActualRPM());
     }
 
     public void updateLauncher()
     {
-        launcher.setLauncherTargetSpeed(500);
+        launcher.setLauncherTargetRPM(500);
     }
 
     public double adjustAngleForDriverPosition(double angle, RobotStartPosition robotStartPosition)

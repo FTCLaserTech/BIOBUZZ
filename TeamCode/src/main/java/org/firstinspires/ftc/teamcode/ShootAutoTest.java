@@ -120,7 +120,7 @@ public class ShootAutoTest extends OpMode
     {
         // recalc and update the launcher speed each time through the loop
         robot.updateLauncher();
-        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetSpeed());
+        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetRPM());
         telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualSpeed());
 
         follower.update();

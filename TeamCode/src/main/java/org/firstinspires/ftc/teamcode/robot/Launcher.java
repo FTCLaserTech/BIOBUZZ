@@ -12,16 +12,19 @@ public class Launcher
 {
     private DcMotorEx launcher1;
     private DcMotorEx launcher2;
-    private double targetRPM = 0.0;
+    //private double targetRPM = 0.0;
     private double motorPower = 0.0;
 
 
-    private double motorGear = 20.0;
-    private double flywheelGear = 30.0;
+    private final double MOTOR_GEAR = 20.0;
+    private final double FLYWHEEL_GEAR = 20.0;
+    private final double LAUNCHER_TICS_PER_REV = 28.0; // Gobilda 5203 - 6000
+    private final double MOTOR_MAX_RPM = 6000;
+    private final double LAUNCHER_LOW_RPM = 2400;
+    private final double LAUNCHER_HIGH_RPM = 2600;
 
-    double maxLauncherRPM = 4500.0;  //RPM
-    double launcherTicksPerRev = 28.0; // Gobilda 5203 - 6000
-    double maxLauncherTPS = launcherTicksPerRev * maxLauncherRPM / 60; // 2800
+    private final double LAUNCHER_MAX_RPM = MOTOR_MAX_RPM * MOTOR_GEAR / FLYWHEEL_GEAR;  //RPM
+    //private final double maxLauncherTPS = LAUNCHER_TICS_PER_REV * maxLauncherRPM / 60; // 2800
     //private double shooterTargetVelocity = 0.0;
 
     public static double kS = 0.0;
@@ -31,7 +34,7 @@ public class Launcher
     private Controller launcherSFF = Controller.staticFeedforward(kS);
     private Controller launcherPFF = Controller.proportionalFeedforward(kV);
 
-    private double launcherTargetSpeed = 0.0;
+    private double launcherTargetRPM = 0.0;
     public double launcher1TPS = 0.0;
     public double launcher2TPS = 0.0;
 
@@ -62,11 +65,11 @@ public class Launcher
         launcherSFF = Controller.staticFeedforward(kS);
         launcherPFF = Controller.proportionalFeedforward(kV);
         Controller launcherController = launcherSFF.plus(launcherPFF);
-        double ffPower = launcherController.calculate(targetRPM, launcherActualRPM);
+        double ffPower = launcherController.calculate(launcherTargetRPM, launcherActualRPM);
 
         // bang-bang controller
         double bbPower = 0;
-        if(launcherActualRPM<(targetRPM*bbTolerance))
+        if(launcherActualRPM<(launcherTargetRPM*bbTolerance))
         {
             bbPower = 1;
         }
@@ -86,47 +89,38 @@ public class Launcher
         return(motorPower);
     }
 
-    public double getLauncherActualSpeed()
+    public double getLauncherLowRPM()
     {
-        //return(0);
-        return((launcher1.getVelocity() + launcher2.getVelocity())/2);
+        return(LAUNCHER_LOW_RPM);
     }
 
-    public void setLauncherTargetSpeed(double launcherSpeed)
+    public double getLauncherHighRPM()
     {
-        if(launcherSpeed > maxLauncherTPS)
+        return(LAUNCHER_HIGH_RPM);
+    }
+
+    public void setLauncherTargetRPM(double launcherTargetRPM)
+    {
+        if(launcherTargetRPM > LAUNCHER_MAX_RPM)
         {
-            launcherTargetSpeed = maxLauncherTPS;
+            this.launcherTargetRPM = LAUNCHER_MAX_RPM;
+        }
+        else if(launcherTargetRPM < 0)
+        {
+            this.launcherTargetRPM = 0.0;
         }
         else
         {
-            launcherTargetSpeed = launcherSpeed;
+            this.launcherTargetRPM = launcherTargetRPM;
         }
 
         //launcher1.setVelocity(launcherSpeed);
         //launcher2.setVelocity(launcherSpeed);
     }
 
-    public double getLauncherTargetSpeed()
-    {
-        return(launcherTargetSpeed);
-    }
-
-    public void setLauncherTargetRPM(double targetRPM)
-    {
-        if(targetRPM > maxLauncherRPM)
-        {
-            this.targetRPM = maxLauncherRPM;
-        }
-        else
-        {
-            this.targetRPM = targetRPM;
-        }
-    }
-
     public double getLauncherTargetRPM()
     {
-        return(targetRPM);
+        return(launcherTargetRPM);
     }
 
     public double getLauncherActualRPM()
@@ -164,12 +158,12 @@ public class Launcher
 
     public double motorTPS2flywheelRPM(double tps)
     {
-        return(tps/launcherTicksPerRev*60*motorGear/flywheelGear);
+        return(tps / LAUNCHER_TICS_PER_REV * 60 * MOTOR_GEAR / FLYWHEEL_GEAR);
     }
 
     public double flywheelRPM2motorTPS(double rpm)
     {
-        return(rpm*launcherTargetSpeed/60/motorGear*flywheelGear);
+        return(rpm * launcherTargetRPM / 60 / MOTOR_GEAR * FLYWHEEL_GEAR);
     }
 
 }

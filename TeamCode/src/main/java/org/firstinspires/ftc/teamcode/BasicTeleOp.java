@@ -4,8 +4,10 @@ import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.robot.AutoAim;
 
 import com.pedropathing.follower.ManualDrive;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,6 +23,10 @@ public class BasicTeleOp extends OpMode
     private Follower follower;
     private Robot robot;
     private CameraFunctions cameraFunctions;
+    private AutoAim autoAim;
+
+    enum AutoManual {AUTO, MANUAL};
+    AutoManual autoManual = AutoManual.MANUAL;
 
     public static double headingScaler = 3.0;
     public static double positionScalerAim = 10.0;
@@ -35,7 +41,7 @@ public class BasicTeleOp extends OpMode
     double speedMultiplier = 1.0;
     double rotationMultiplier = 1.0;
 
-    double launcherVelocity = 0.0;
+    //double launcherVelocity = 0.0;
     double storedlauncherVelocity = 800.0;
 
 
@@ -50,6 +56,7 @@ public class BasicTeleOp extends OpMode
         follower = Constants.create(hardwareMap);
         robot = new Robot(hardwareMap);
         cameraFunctions = new CameraFunctions(hardwareMap, this);
+        autoAim = new AutoAim(robot.getLauncherLowRPM(), robot.getLauncherHighRPM());
 
 
         /*
@@ -107,6 +114,15 @@ public class BasicTeleOp extends OpMode
             }
         }
 
+        telemetry.addData("GP2 X to switch Auto/Manual: ", autoManual);
+        if(gamepad2.xWasPressed())
+        {
+            if(autoManual == AutoManual.AUTO)
+                autoManual = AutoManual.MANUAL;
+            else
+                autoManual = AutoManual.AUTO;
+        }
+
         telemetry.update();
     }
 
@@ -147,42 +163,90 @@ public class BasicTeleOp extends OpMode
             follower.update();
         }
 
+        telemetry.addData("GP2 X to switch Auto/Manual: ", autoManual);
+        if(gamepad2.xWasPressed())
+        {
+            if(autoManual == AutoManual.AUTO)
+                autoManual = AutoManual.MANUAL;
+            else
+                autoManual = AutoManual.AUTO;
+        }
+
+        Pose currentPose = follower.pose();
+        if(autoManual == AutoManual.AUTO)
+        {
+            // calculate some values needed for auto pose
+            // which hive is target?
+            // robot-target distance (X-Y projection, no Z)
+            // robot-target normal velocity
+            // robot-target tanget velocity
+        }
+
+
         /*
         Launcher
         */
-        if (gamepad1.dpadDownWasPressed())
+        // add a manual to auto switch
+        if(autoManual == AutoManual.MANUAL)
         {
-            launcherVelocity = launcherVelocity - 25.0;
-            if (launcherVelocity < 0.0 )
+            if (gamepad1.dpadDownWasPressed())
             {
-                launcherVelocity = 0.0;
+                robot.setLauncherTargetRPM(robot.getLauncherTargetRPM() - 25.0);
+            }
+            if (gamepad1.dpadUpWasPressed())
+            {
+                robot.setLauncherTargetRPM(robot.getLauncherTargetRPM() + 25.0);
             }
 
-        }
-        if (gamepad1.dpadUpWasPressed())
-        {
-            launcherVelocity = launcherVelocity + 25.0;
-        }
-
-        // launcher  function
-        if (gamepad1.xWasPressed())
-        {
-            if(launcherVelocity == 0.0)
+            // launcher  function
+            if (gamepad1.xWasPressed())
             {
-                launcherVelocity = storedlauncherVelocity;
+                if (robot.getLauncherTargetRPM() == 0.0)
+                {
+                    robot.setLauncherTargetRPM(storedlauncherVelocity);
+                } else
+                {
+                    storedlauncherVelocity = robot.getLauncherTargetRPM();
+                    robot.setLauncherTargetRPM(0.0);
+                }
             }
-            else
-            {
-                storedlauncherVelocity = launcherVelocity;
-                launcherVelocity = 0.0;
-            }
+            //robot.setLauncherTargetRPM(launcherVelocity);
         }
-        robot.setLauncherTargetSpeed(launcherVelocity);
-
+        else // auto launcher
+        {
+            robot.setLauncherTargetRPM(autoAim.calcLauncherSpeed(0.0,0.0));
+        }
         // recalc and update the launcher speed each time through the loop
         robot.updateLauncher();
-        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetSpeed());
-        telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualSpeed());
+        telemetry.addData("Launcher Target RPM: ", robot.getLauncherTargetRPM());
+        telemetry.addData("Launcher Actual RPM: ", robot.getLauncherActualRPM());
+
+        /*
+        Turret
+        */
+        if(autoManual == AutoManual.MANUAL)
+        {
+            // use gp2 joystick to set turret position?
+            ;
+        }
+        else // auto turret
+        {
+            double turretVelCompOffset = autoAim.calcTurretPosition(0,0,0);
+            // calculate aim
+            double turretAngle = 0.0;
+            //double turretAngle = goalHeadingActual - launcherHeading + turretVelCompOffset;
+            //lastLauncherHeading = launcherHeading;
+
+            if(turretAngle > Math.PI)
+            {
+                turretAngle = turretAngle - 2 * Math.PI;
+            }
+            else if(turretAngle < -Math.PI)
+            {
+                turretAngle = turretAngle + 2 * Math.PI;
+            }
+            //robot.setTurretPosition(turretAngle);
+        }
 
         /*
         Intake and Ballstop
@@ -194,7 +258,6 @@ public class BasicTeleOp extends OpMode
         else if (gamepad1.right_trigger > 0)
         {
             robot.ballsShoot();
-
         }
         else if (gamepad1.left_trigger > 0)
         {

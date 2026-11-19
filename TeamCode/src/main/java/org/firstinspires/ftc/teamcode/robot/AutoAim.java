@@ -2,68 +2,46 @@ package org.firstinspires.ftc.teamcode.robot;
 
 public class AutoAim
 {
-    public AutoAim()
+    private double minLauncherSpeed = 0.0;
+    private double maxLauncherSpeed = 0.0;
+    public AutoAim(double minLauncherSpeed, double maxLauncherSpeed)
     {
-        ;
+        this.minLauncherSpeed = minLauncherSpeed;
+        this.maxLauncherSpeed = maxLauncherSpeed;
     }
 
+    private double DISTANCE_THRESHOLD = 30.0;
+    private double SPEED_THRESHOLD = 2000.0;
 
-    double MIN_LAUNCHER_SPEED = 1000.0;
-    double MAX_LAUNCHER_SPEED = 2000.0;
-
-    public double distanceToLauncherSpeed(double robotTargetDistance, double robotTargetNormalVelocity)
+    public double calcLauncherSpeed(double robotTargetDistance, double robotTargetNormalVelocity)
     {
-        // range to speed function
-        double shooterTargetVelocity  = 977 + (6.56 * robotTargetDistance) + (0.00473 * robotTargetDistance * robotTargetDistance);
+        double shooterTargetVelocity = minLauncherSpeed;
 
-        // offset for robot velocity
-        double rangeScale = 0.0;
-        shooterTargetVelocity = shooterTargetVelocity + (robotTargetNormalVelocity * rangeScale);
+        // we have 2 speeds, low (min) and high (max)
+        // if robotTargetDistance > some distance or speed > some speed
+        //    use the high speed
+        // else
+        //    use the low speed
 
-        shooterTargetVelocity = clamp(shooterTargetVelocity,MAX_LAUNCHER_SPEED, MIN_LAUNCHER_SPEED);
+        if(robotTargetDistance > 35)
+            shooterTargetVelocity = maxLauncherSpeed;
+        if(robotTargetNormalVelocity > 8)
+            shooterTargetVelocity = maxLauncherSpeed;
 
         return(shooterTargetVelocity);
     }
 
-    public double ballSpeedToLauncherSpeed(double ballSpeed)
+    public double calcTurretPosition(double ballNormalVelocity, double robotNormalVelocity, double robotTangetVelocity)
     {
-        double shooterTargetVelocity  = 960 - (3.23 * ballSpeed) + (0.0285 * ballSpeed * ballSpeed);
-        shooterTargetVelocity = clamp(shooterTargetVelocity,MAX_LAUNCHER_SPEED, MIN_LAUNCHER_SPEED);
-        return(shooterTargetVelocity);
-    }
+        // x = distance to target
+        // time = how long the ball takes to get to the target for current robot position
+        // velN = speed normal to the target
+        // velT = speed tangential to the target
+        // double ivr = x / time + velN; // this is the ball normal velocity
+        double normalVelocity = ballNormalVelocity + robotNormalVelocity;
+        double turretVelCompOffset = Math.atan(robotTangetVelocity / normalVelocity);
 
-    public double hoodAngleToServoPosition(double hoodAngle)
-    {
-        // 1 60 - 0.5
-        // 2 47 - 0.0
-
-        // return y1 + ((y2 - y1) / (x2 - x1)) * (x - x1);
-
-        double servoPosition = clamp( 0.5 + ((0.0 - 0.5) / (47 - 60)) * (hoodAngle - 60), 1.0,0.0);
-        if (Double.isNaN(servoPosition))
-        {
-            servoPosition = 1.0;
-        }
-        return servoPosition;
-    }
-
-    public double distanceToBackboardPosition(double distance)
-    {
-        double position = 0.0;
-        // range to
-        if(distance > 90)
-        {
-            position = 0.0;
-        }
-        else
-        {
-            position = (1.06 - (0.02 * distance) + (0.0000919 * distance * distance));
-            if (position > 0.5)
-            {
-                position = 0.5;
-            }
-        }
-        return (position);
+        return(turretVelCompOffset);
     }
 
     public double clamp(double val, double max, double min)

@@ -176,7 +176,7 @@ public class FirstShot_Solo extends OpMode
         //firstSequence.schedule();
         schedule(firstSequence);
 
-        robot.setLauncherTargetSpeed(2500);
+        robot.setLauncherTargetRPM(2500);
 
 
     }
@@ -190,8 +190,8 @@ public class FirstShot_Solo extends OpMode
 
         // recalc and update the launcher speed each time through the loop
         robot.updateLauncher();
-        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetSpeed());
-        telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualSpeed());
+        telemetry.addData("Launcher Target Speed: ", robot.getLauncherTargetRPM());
+        telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualRPM());
 
         follower.update();
         Scheduler.execute();
