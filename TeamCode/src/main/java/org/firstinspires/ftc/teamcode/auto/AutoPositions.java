@@ -36,7 +36,7 @@ public class AutoPositions
     public AutoPositions(PoseFactory poseFactory)
     {
         path1Start = poseFactory.of(108, 137.5, 0);
-        scoringShootingPosition = poseFactory.of(110, 135.5, 45);
+        scoringShootingPosition = poseFactory.of(110, 134, 45);
         //cornerPickupPos1 = poseFactory.of(90, 130, 0);
         //cornerPickupPos2 = poseFactory.of(105.0, 135, 0);
         cornerPickupPos3 = poseFactory.of(131, 137, 0);
@@ -57,8 +57,8 @@ public class AutoPositions
                 Paths.line(cornerPickupPos3, scoringShootingPosition).linear(cornerPickupPos3, scoringShootingPosition)); // go back to shoot
         //Paths.line(cornerPickupPos1, scoringShootingPosition).linear(cornerPickupPos1, scoringShootingPosition));
         moveToFlower = Paths.path(
-                Paths.line(path1Start, flowerPickupPos1).linear(path1Start, flowerPickupPos1),
-                Paths.line(flowerPickupPos1, flowerPickupPos2).linear(flowerPickupPos1, flowerPickupPos2));
+                Paths.curve(path1Start, flowerPickupPos1, flowerPickupPos2).linear(path1Start,flowerPickupPos2));
+                //Paths.line(flowerPickupPos1, flowerPickupPos2).linear(flowerPickupPos1, flowerPickupPos2));
         reverseForUnderHive = Paths.line(path1Start, point6).linear(path1Start, point6); // turn around to reverse to the other side
         shootOnOppositeSide = Paths.line(point6, point7).linear(point6, point7); // Move to shooting zone on the other side
         goToOppositeFlower =
