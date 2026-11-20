@@ -82,14 +82,6 @@ public class FirstShot_Partner extends OpMode
     }
 
 
-    /*
-    EnumMap<CameraFunctions.HivePosition, Command> hiveCases = new EnumMap<>(CameraFunctions.HivePosition.class);
-    hiveCases.put(CameraFunctions.HivePosition.SCORING, stayshoot);
-    hiveCases.put(CameraFunctions.HivePosition.NA, underHive);
-    hiveCases.put(CameraFunctions.HivePosition.AUDIENCE, underHive);
-
-     */
-
     @Override
     public void start()
 
@@ -97,18 +89,18 @@ public class FirstShot_Partner extends OpMode
         cameraFunctions.resumeStreaming();
 
         Command stayshoot = sequential(
+                follow(follower, autoPositions.shootFlower),
                 instant(() -> robot.ballsShoot()),
-                //extras.IntakeForward,
                 waitMs(2000),
                 instant(() -> robot.ballsStop()),
-                follow(follower, autoPositions.shootFlower)
+                follow(follower, autoPositions.park1)
+
         );
 
         Command underHive = sequential(
                 waitMs(1000),
                 follow(follower, autoPositions.reverseForUnderHive),
                 waitMs(2000),
-                //extras.IntakeForward,
                 instant(() -> robot.ballsOuttake()),
                 follow(follower, autoPositions.shootOnOppositeSide),
                 instant(() -> robot.ballsStop()),
@@ -116,9 +108,9 @@ public class FirstShot_Partner extends OpMode
                 follow(follower, autoPositions.goToOppositeFlower),
                 waitMs(2000),
                 follow(follower, autoPositions.shootFlower),
-                //follow(follower, path11),  //Put it back in
-                //follow(follower, path12) // put back in
-                instant(() -> robot.ballsStop())
+                instant(() -> robot.ballsStop()),
+                follow(follower, autoPositions.park2)
+
         );
 
         EnumMap<CameraFunctions.HivePosition, Command> hiveCases2 = new EnumMap<>(Map.of(
@@ -130,9 +122,8 @@ public class FirstShot_Partner extends OpMode
 
 
         Command scoringShoot2 = sequential(
-                follow(follower, autoPositions.shootFlower),
+                follow(follower, autoPositions.moveToFlower),
                 instant(() -> robot.ballsShoot()),
-                //extras.IntakeForward,
                 waitMs(2000),
                 instant(() -> robot.ballsStop()),
                 checkhiveposition2
@@ -156,15 +147,15 @@ public class FirstShot_Partner extends OpMode
 
 
         Command firstSequence = sequential(
-                //follow(follower, autoPositions.moveToScoringLaunchPosition),
                 instant(() -> robot.ballsShoot()),
-                //extras.IntakeForward,
                 waitMs(2000),
                 instant(() -> robot.ballsStop()),
                 follow(follower, autoPositions.moveToCornerFromScoringLaunch),
                 waitMs(1000),
                 follow(follower, autoPositions.moveFromCornerToScoring),
+                instant(() -> robot.ballsShoot()),
                 waitMs(1000),
+                instant(() -> robot.ballsStop()),
                 checkhiveposition1,
                 waitMs(1000)
         );
@@ -175,7 +166,7 @@ public class FirstShot_Partner extends OpMode
         //firstSequence.schedule();
         schedule(firstSequence);
 
-        robot.setLauncherTargetRPM(2500);
+        //robot.setLauncherTargetRPM(2500);
 
 
     }
