@@ -182,7 +182,6 @@ public class BasicTeleOp extends OpMode
             // robot-target tanget velocity
         }
 
-
         /*
         Launcher
         */

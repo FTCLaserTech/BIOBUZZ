@@ -159,6 +159,33 @@ public class CameraFunctions
         streamingOn = false;
     }
 
+    public int getExposure()
+    {
+        return exposure;
+    }
+
+    public int getGain()
+    {
+        return gain;
+    }
+
+    public void setManualExposure(int exposureMS, int gain)
+    {
+        ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+        if (exposureControl.getMode() != ExposureControl.Mode.Manual)
+        {
+            exposureControl.setMode(ExposureControl.Mode.Manual);
+            //opMode.sleep(50);
+        }
+        exposureControl.setExposure((long) exposureMS, TimeUnit.MILLISECONDS);
+        //sleep(20);
+
+        // Set Gain.
+        GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+        gainControl.setGain(gain);
+        //sleep(20);
+    }
+
     public HivePosition checkHivePosition(Robot.TeamColor teamColor)
     {
         List<AprilTagDetection> currentDetections = null;
