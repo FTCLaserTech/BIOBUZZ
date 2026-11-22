@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.Launcher;
 
 //import dev.nextftc.control.geometry.PoseVelocity2d;
@@ -17,7 +18,9 @@ public class ShooterTester2 extends OpMode
 {
     private ElapsedTime runtime = new ElapsedTime();
 
-    private Launcher launcher;
+    //private Launcher launcher;
+    //private Intake intake;
+    private Robot robot;
 
     public static double launcherRPMIncrement = 10.0;
 
@@ -30,8 +33,11 @@ public class ShooterTester2 extends OpMode
     @Override
     public void init()
     {
-        launcher = new Launcher(hardwareMap);
+        //launcher = new Launcher(hardwareMap);
+        //intake = new Intake(hardwareMap);
+        robot = new Robot (hardwareMap);
     }
+
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
@@ -57,6 +63,23 @@ public class ShooterTester2 extends OpMode
     @Override
     public void loop()
     {
+        if (gamepad1.right_bumper)
+        {
+            robot.ballsIntake();
+        }
+        else if (gamepad1.right_trigger > 0)
+        {
+            robot.ballsShoot();
+        }
+        else if (gamepad1.left_trigger > 0)
+        {
+            robot.ballsOuttake();
+        }
+        else
+        {
+            robot.ballsStop();
+        }
+
         // Set Launcher RPM
         if (gamepad1.dpadDownWasPressed())
         {
@@ -66,8 +89,8 @@ public class ShooterTester2 extends OpMode
         {
             targetLauncherRPM = targetLauncherRPM + launcherRPMIncrement;
         }
-        launcher.setLauncherTargetRPM(targetLauncherRPM);
-        targetLauncherRPM = launcher.getLauncherTargetRPM();
+        robot.setLauncherTargetRPM(targetLauncherRPM);
+        targetLauncherRPM = robot.getLauncherTargetRPM();
 
         // Set Launcher On/Off
         if (gamepad1.xWasPressed())
@@ -83,17 +106,17 @@ public class ShooterTester2 extends OpMode
             }
         }
 
-        double motorPower = launcher.updateLauncher();
+        double motorPower = robot.updateLauncher();
 
         // recalc and update the launcher speed each time through the loop
         telemetry.addLine("X: On/Off ");
         telemetry.addLine("Dpad Up/Down: Faster/Slower");
         telemetry.addData("Launcher Target Speed: ", targetLauncherRPM);
-        telemetry.addData("Launcher Actual Speed: ", launcher.getLauncherActualRPM());
-        telemetry.addData("Launcher Actual Speed Avg: ", launcher.getLauncherActualRPMAvergae());
+        telemetry.addData("Launcher Actual Speed: ", robot.getLauncherActualRPM());
+        telemetry.addData("Launcher Actual Speed Avg: ", robot.getLauncherActualRPMAverage());
         telemetry.addData("Launcher Motor Power: ", motorPower);
-        telemetry.addData("Launcher 1 TPS: ", launcher.launcher1TPS);
-        telemetry.addData("Launcher 2 TPS: ", launcher.launcher2TPS);
+        //telemetry.addData("Launcher 1 TPS: ", launcher.launcher1TPS);
+        //telemetry.addData("Launcher 2 TPS: ", launcher.launcher2TPS);
 
         telemetry.update();
     }

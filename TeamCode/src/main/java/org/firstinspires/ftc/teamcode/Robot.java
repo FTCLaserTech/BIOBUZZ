@@ -86,9 +86,14 @@ public class Robot
         return(launcher.getLauncherActualRPM());
     }
 
-    public void updateLauncher()
+    public double getLauncherActualRPMAverage()
     {
-        launcher.setLauncherTargetRPM(500);
+        return (launcher.getLauncherActualRPMAverage());
+    }
+
+    public double updateLauncher()
+    {
+        return (launcher.updateLauncher());
     }
 
     public double adjustAngleForDriverPosition(double angle, RobotStartPosition robotStartPosition)

@@ -135,7 +135,7 @@ public class Launcher
     Double[] launcher1Velocities = new Double[numSamples];
     Double[] launcher2Velocities = new Double[numSamples];
     int index = 0;
-    public double getLauncherActualRPMAvergae()
+    public double getLauncherActualRPMAverage()
     {
 
         launcher1Velocities[index] = launcher1.getVelocity();

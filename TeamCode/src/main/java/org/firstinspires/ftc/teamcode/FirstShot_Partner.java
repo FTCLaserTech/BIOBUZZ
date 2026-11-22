@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.match;
@@ -114,7 +115,7 @@ public class FirstShot_Partner extends OpMode
         );
 
         EnumMap<CameraFunctions.HivePosition, Command> hiveCases2 = new EnumMap<>(Map.of(
-                CameraFunctions.HivePosition.NA, stayshoot,
+                CameraFunctions.HivePosition.NA, underHive,
                 CameraFunctions.HivePosition.AUDIENCE, underHive,
                 CameraFunctions.HivePosition.SCORING, stayshoot
         ));
