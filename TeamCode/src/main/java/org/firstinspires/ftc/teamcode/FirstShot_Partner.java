@@ -28,10 +28,11 @@ public class FirstShot_Partner extends OpMode
     private CameraFunctions cameraFunctions;
     private final PoseFactory poseFactory = PoseFactory.degrees();
     private AutoPositions autoPositions;
-    private enum LeftRight
-    {LEFT, RIGHT}
+    private enum LeftRight {LEFT, RIGHT}
 
     private LeftRight startorientation = LeftRight.LEFT;
+
+    private String command = "";
 
     @Override
     public void init()
@@ -94,7 +95,6 @@ public class FirstShot_Partner extends OpMode
                 waitMs(2000),
                 instant(() -> robot.ballsStop()),
                 follow(follower, autoPositions.park1)
-
         );
 
         Command underHive = sequential(
@@ -114,7 +114,7 @@ public class FirstShot_Partner extends OpMode
         );
 
         EnumMap<CameraFunctions.HivePosition, Command> hiveCases2 = new EnumMap<>(Map.of(
-                CameraFunctions.HivePosition.NA, underHive,
+                CameraFunctions.HivePosition.NA, stayshoot,
                 CameraFunctions.HivePosition.AUDIENCE, underHive,
                 CameraFunctions.HivePosition.SCORING, stayshoot
         ));
@@ -122,20 +122,26 @@ public class FirstShot_Partner extends OpMode
 
 
         Command scoringShoot2 = sequential(
+                instant(() -> command = "moveToFlower"),
                 follow(follower, autoPositions.moveToFlower),
+                instant(() -> command = "shootballs"),
                 instant(() -> robot.ballsShoot()),
                 waitMs(2000),
                 instant(() -> robot.ballsStop()),
-                checkhiveposition2
+                //waitMs(1000),
+                instant(() -> command = "checkhiveposition2"),
+                checkhiveposition2,
+                instant(() -> command = "AfterCheckHivePosition2")
+                //waitMs(1000)
         );
 
         Command scoringShootOpposite = sequential(
                 follow(follower, autoPositions.shootOnOppositeSide),
                 instant(() -> robot.ballsShoot()),
-                //extras.IntakeForward,
                 waitMs(2000),
-                instant(() -> robot.ballsStop())
-        );
+                instant(() -> robot.ballsStop()),
+                follow(follower, autoPositions.park2)
+                );
 
 
         EnumMap<CameraFunctions.HivePosition, Command> hiveCases1 = new EnumMap<>(Map.of(
@@ -175,6 +181,7 @@ public class FirstShot_Partner extends OpMode
     @Override
     public void loop()
     {
+        telemetry.addLine(command);
         CameraFunctions.HivePosition hivePosition = cameraFunctions.checkHivePosition(robot.teamColor);
         telemetry.addData("Hive Position: ", hivePosition);
 

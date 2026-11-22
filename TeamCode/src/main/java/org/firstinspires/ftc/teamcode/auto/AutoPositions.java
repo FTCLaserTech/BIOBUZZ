@@ -7,7 +7,7 @@ import com.pedropathing.paths.Path;
 
 public class AutoPositions
 {
-   // private final PoseFactory poseFactory = PoseFactory.degrees();
+    // private final PoseFactory poseFactory = PoseFactory.degrees();
 
     public final Pose path1Start;
     public final Pose scoringShootingPosition;
@@ -46,7 +46,7 @@ public class AutoPositions
         point10 = poseFactory.of(85, 10, 90);
         flowerPickupPos1 = poseFactory.of(108, 106, 315);
         flowerPickupPos2 = poseFactory.of(124, 95, 0);
-        parkingPosition = poseFactory.of(124,36,0);
+        parkingPosition = poseFactory.of(124, 36, 0);
 
 
         moveToCornerFromScoringLaunch = Paths.path(
@@ -54,7 +54,7 @@ public class AutoPositions
         moveFromCornerToScoring = Paths.path(
                 Paths.line(cornerPickupPos3, scoringShootingPosition).linear(cornerPickupPos3, scoringShootingPosition)); // go back to shoot
         moveToFlower = Paths.path(
-                Paths.curve(path1Start, flowerPickupPos1, flowerPickupPos2).linear(path1Start,flowerPickupPos2));
+                Paths.curve(path1Start, flowerPickupPos1, flowerPickupPos2).linear(path1Start, flowerPickupPos2));
         reverseForUnderHive = Paths.line(path1Start, point6).linear(path1Start, point6); // turn around to reverse to the other side
         shootOnOppositeSide = Paths.line(point6, point7).linear(point6, point7); // Move to shooting zone on the other side
         goToOppositeFlower =
@@ -64,6 +64,7 @@ public class AutoPositions
         shootFlower = Paths.line(flowerPickupPos2, scoringShootingPosition).linear(flowerPickupPos2, scoringShootingPosition); // turn back to shoot pollen from the flower
         shootOnOppositeSide2 = Paths.line(flowerPickupPos2, point10).linear(flowerPickupPos2, point10); // turn back to shoot pollen from the flower
         park1 = Paths.line(scoringShootingPosition, parkingPosition).linear(scoringShootingPosition, parkingPosition); // turn back to shoot pollen from the flower
-        park2 = Paths.line(point7, parkingPosition).linear(point7, parkingPosition); // turn back to shoot pollen from the flower
+        park2 = Paths.line(point7, parkingPosition).linear(point7, parkingPosition);
 
-    }}
+    }
+}
