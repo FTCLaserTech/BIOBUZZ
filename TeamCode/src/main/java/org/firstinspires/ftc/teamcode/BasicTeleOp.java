@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.atan2;
+import static java.lang.Math.sqrt;
+
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
 
@@ -56,7 +59,7 @@ public class BasicTeleOp extends OpMode
         follower = Constants.create(hardwareMap);
         robot = new Robot(hardwareMap);
         cameraFunctions = new CameraFunctions(hardwareMap, this);
-        autoAim = new AutoAim(robot.getLauncherLowRPM(), robot.getLauncherHighRPM());
+        autoAim = new AutoAim(this);
 
 
         /*
@@ -223,6 +226,7 @@ public class BasicTeleOp extends OpMode
         /*
         Turret
         */
+        double turretAngle = 0.0;
         if(autoManual == AutoManual.MANUAL)
         {
             // use gp2 joystick to set turret position?
@@ -230,21 +234,7 @@ public class BasicTeleOp extends OpMode
         }
         else // auto turret
         {
-            double turretVelCompOffset = autoAim.calcTurretPosition(0,0,0);
-            // calculate aim
-            double turretAngle = 0.0;
-            //double turretAngle = goalHeadingActual - launcherHeading + turretVelCompOffset;
-            //lastLauncherHeading = launcherHeading;
-
-            if(turretAngle > Math.PI)
-            {
-                turretAngle = turretAngle - 2 * Math.PI;
-            }
-            else if(turretAngle < -Math.PI)
-            {
-                turretAngle = turretAngle + 2 * Math.PI;
-            }
-            //robot.setTurretPosition(turretAngle);
+            turretAngle = autoAim.calcTurretPosition(follower, robot.teamColor, robot.getBallVelocity());
         }
 
         /*
@@ -267,6 +257,23 @@ public class BasicTeleOp extends OpMode
             robot.ballsStop();
         }
 
+        if(gamepad2.aWasPressed())
+        {
+            follower.setPose(new Pose(144.0,0.0,0.0));
+        }
+        if(gamepad2.bWasPressed())
+        {
+            follower.setPose(new Pose(144.0,144.0,0.0));
+        }
+        if(gamepad2.xWasPressed())
+        {
+            follower.setPose(new Pose(0.0,0.0,180.0));
+        }
+        if(gamepad2.yWasPressed())
+        {
+            follower.setPose(new Pose(0.0,144.0, 180.0));
+        }
+
         //telemetry.addData("Launcher On: ", launcherOn);
 
         //telemetry.addData("launcher target velocity: ", launcherVelocity);
@@ -275,7 +282,6 @@ public class BasicTeleOp extends OpMode
         telemetry.update();
     }
 
-
     /*
      * Code to run ONCE after the driver hits STOP
      */
@@ -283,8 +289,5 @@ public class BasicTeleOp extends OpMode
     public void stop()
     {
         ;
-    }}
-
-
-
-
+    }
+}

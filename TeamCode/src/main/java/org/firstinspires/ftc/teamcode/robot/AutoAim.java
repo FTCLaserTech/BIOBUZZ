@@ -1,13 +1,31 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static java.lang.Math.atan2;
+import static java.lang.Math.sqrt;
+
+import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.teamcode.Robot;
+
 public class AutoAim
 {
-    private double minLauncherSpeed = 0.0;
-    private double maxLauncherSpeed = 0.0;
-    public AutoAim(double minLauncherSpeed, double maxLauncherSpeed)
+    private OpMode opMode;
+    private final double LAUNCHER_LOW_RPM = 2400;
+    private final double LAUNCHER_HIGH_RPM = 2600;
+
+    private final double hiveXOffset = 12.758;
+    private final double hiveYOffset = 20.007;
+    public final Pose redAudience = new Pose(72-hiveXOffset,72-hiveYOffset);
+    public final Pose redScoring = new Pose(72-hiveXOffset,72+hiveYOffset);
+    public final Pose blueAudience = new Pose(72+hiveXOffset,72-hiveYOffset);
+    public final Pose blueScoring = new Pose(72+hiveXOffset,72+hiveYOffset);
+    private static double MIN_LAUNCHER_SPEED = 2400.0;
+    private static double MAX_LAUNCHER_SPEED = 2600.0;
+    public AutoAim(OpMode opMode)
     {
-        this.minLauncherSpeed = minLauncherSpeed;
-        this.maxLauncherSpeed = maxLauncherSpeed;
+        this.opMode = opMode;
     }
 
     private double DISTANCE_THRESHOLD = 30.0;
@@ -15,7 +33,7 @@ public class AutoAim
 
     public double calcLauncherSpeed(double robotTargetDistance, double robotTargetNormalVelocity)
     {
-        double shooterTargetVelocity = minLauncherSpeed;
+        double shooterTargetVelocity = MIN_LAUNCHER_SPEED;
 
         // we have 2 speeds, low (min) and high (max)
         // if robotTargetDistance > some distance or speed > some speed
@@ -23,15 +41,86 @@ public class AutoAim
         // else
         //    use the low speed
 
-        if(robotTargetDistance > 35)
-            shooterTargetVelocity = maxLauncherSpeed;
+        if(robotTargetDistance > 45)
+            shooterTargetVelocity = MAX_LAUNCHER_SPEED;
         if(robotTargetNormalVelocity > 8)
-            shooterTargetVelocity = maxLauncherSpeed;
+            shooterTargetVelocity = MAX_LAUNCHER_SPEED;
 
         return(shooterTargetVelocity);
     }
 
-    public double calcTurretPosition(double ballNormalVelocity, double robotNormalVelocity, double robotTangetVelocity)
+    public double calcTurretPosition(Follower follower, Robot.TeamColor teamColor, double ballNormalVelocity)
+    {
+        double robotPositionX = follower.pose().x();
+        double robotPositionY = follower.pose().y();
+        double robotHeading = follower.pose().heading();
+        double hiveXPosition = 0.0;
+        double hiveYPosition = 0.0;
+        double hiveDistanceActual = 0.0;
+        double hiveHeadingActual = 0.0;
+
+        if (teamColor == Robot.TeamColor.RED)
+        {
+            if (robotPositionY < 72)
+            {
+                hiveXPosition = redAudience.x();
+                hiveYPosition = redAudience.y();
+            }
+            else
+            {
+                hiveXPosition = redScoring.x();
+                hiveYPosition = redScoring.y();
+            }
+        }
+        else
+        {
+            if (robotPositionY < 72)
+            {
+                hiveXPosition = blueAudience.x();
+                hiveYPosition = blueAudience.y();
+            }
+            else
+            {
+                hiveXPosition = blueScoring.x();
+                hiveYPosition = blueScoring.y();
+            }
+        }
+
+        hiveDistanceActual = sqrt((hiveXPosition - robotPositionX) * (hiveXPosition - robotPositionX) + ( hiveYPosition - robotPositionY) * (hiveYPosition - robotPositionY));
+        hiveHeadingActual = atan2(hiveYPosition - robotPositionY, hiveXPosition - robotPositionX);
+
+        double coordinateTheta = follower.velocity().omega - hiveHeadingActual;
+        double robotNormalVelocity = Math.sin(coordinateTheta)*follower.tangentialVelocity();
+        double robotTangentVelocity = -Math.cos(coordinateTheta)*follower.tangentialVelocity();
+
+        double turretVelCompOffset = calcTurretOffset(ballNormalVelocity,robotNormalVelocity,robotTangentVelocity);
+        // calculate aim
+        //double turretAngle = 0.0;
+        double turretAngle = hiveHeadingActual - robotHeading + turretVelCompOffset;
+        //lastLauncherHeading = launcherHeading;
+
+        if(turretAngle > Math.PI)
+        {
+            turretAngle = turretAngle - 2 * Math.PI;
+        }
+        else if(turretAngle < -Math.PI)
+        {
+            turretAngle = turretAngle + 2 * Math.PI;
+        }
+        //robot.setTurretPosition(turretAngle);
+
+        opMode.telemetry.addData("hiveDistanceActual: ", hiveDistanceActual);
+        opMode.telemetry.addData("hiveHeadingActual: ", hiveHeadingActual);
+        opMode.telemetry.addData("coordinateTheta: ", coordinateTheta);
+        opMode.telemetry.addData("robotNormalVelocity: ", robotNormalVelocity);
+        opMode.telemetry.addData("robotTangentVelocity: ", robotTangentVelocity);
+        opMode.telemetry.addData("turretVelCompOffset: ", turretVelCompOffset);
+        opMode.telemetry.addData("hiveDistanceActual: ", hiveDistanceActual);
+        opMode.telemetry.addData("turretAngle: ", turretAngle);
+
+        return(turretAngle);
+    }
+    public double calcTurretOffset(double ballNormalVelocity, double robotNormalVelocity, double robotTangetVelocity)
     {
         // x = distance to target
         // time = how long the ball takes to get to the target for current robot position

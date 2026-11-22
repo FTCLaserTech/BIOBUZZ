@@ -61,16 +61,6 @@ public class Robot
         intake.setIntake(Intake.IntakeStates.OFF);
     }
 
-    public double getLauncherLowRPM()
-    {
-        return(launcher.getLauncherLowRPM());
-    }
-
-    public double getLauncherHighRPM()
-    {
-        return(launcher.getLauncherHighRPM());
-    }
-
     public double getLauncherTargetRPM()
     {
         return(launcher.getLauncherTargetRPM());
@@ -94,6 +84,12 @@ public class Robot
     public double updateLauncher()
     {
         return (launcher.updateLauncher());
+    }
+
+    public double getBallVelocity()
+    {
+        // in inches
+        return(launcher.getBallVelocity());
     }
 
     public double adjustAngleForDriverPosition(double angle, RobotStartPosition robotStartPosition)

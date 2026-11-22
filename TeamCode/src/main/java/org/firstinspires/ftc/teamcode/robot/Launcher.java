@@ -16,16 +16,12 @@ public class Launcher
     private double motorPower = 0.0;
 
 
+    private final double LAUNCHER_DIAMETER_IN = 72.0/25.4;
     private final double MOTOR_GEAR = 20.0;
     private final double FLYWHEEL_GEAR = 20.0;
     private final double LAUNCHER_TICS_PER_REV = 28.0; // Gobilda 5203 - 6000
     private final double MOTOR_MAX_RPM = 6000;
-    private final double LAUNCHER_LOW_RPM = 2400;
-    private final double LAUNCHER_HIGH_RPM = 2600;
-
     private final double LAUNCHER_MAX_RPM = MOTOR_MAX_RPM * MOTOR_GEAR / FLYWHEEL_GEAR;  //RPM
-    //private final double maxLauncherTPS = LAUNCHER_TICS_PER_REV * maxLauncherRPM / 60; // 2800
-    //private double shooterTargetVelocity = 0.0;
 
     public static double kS = 0.0;
     public static double kV = 0.000296;
@@ -89,16 +85,6 @@ public class Launcher
         return(motorPower);
     }
 
-    public double getLauncherLowRPM()
-    {
-        return(LAUNCHER_LOW_RPM);
-    }
-
-    public double getLauncherHighRPM()
-    {
-        return(LAUNCHER_HIGH_RPM);
-    }
-
     public void setLauncherTargetRPM(double launcherTargetRPM)
     {
         if(launcherTargetRPM > LAUNCHER_MAX_RPM)
@@ -129,6 +115,12 @@ public class Launcher
         launcher1TPS = launcher1.getVelocity();
         launcher2TPS = launcher2.getVelocity();
         return(motorTPS2flywheelRPM( (launcher1TPS + launcher2TPS)/2 ));
+    }
+
+    public double getBallVelocity()
+    {
+        // in inches
+        return(Math.PI*LAUNCHER_DIAMETER_IN*getLauncherActualRPM()/60);
     }
 
     int numSamples = 100;
