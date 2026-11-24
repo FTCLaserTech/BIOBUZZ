@@ -5,6 +5,7 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.match;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.race;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -15,6 +16,7 @@ import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.auto.AutoCommands;
 import org.firstinspires.ftc.teamcode.auto.AutoPositions;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
@@ -22,7 +24,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @Autonomous
-public class FirstShot_PartnerOppositeRed extends OpMode
+public class SecondShot_PartnerOpposite extends OpMode
 {
     private Follower follower;
     private Robot robot;
@@ -152,31 +154,36 @@ public class FirstShot_PartnerOppositeRed extends OpMode
         ));
         Command checkhiveposition2 = match(() -> cameraFunctions.checkHivePosition(robot.teamColor), hiveCases2);
 
-
-        Command firstSequence = sequential(
-                checkhiveposition1,
+        Command parkSequence = sequential(
+                follow(follower, autoPositions.moveFromOPPFlowerToOPPSide),
                 instant(() -> robot.ballsShoot()),
                 waitMs(2000),
                 instant(() -> robot.ballsStop()),
-                follow(follower, autoPositions.moveToCornerFromScoringLaunch),
-                waitMs(1000),
-                follow(follower, autoPositions.moveFromCornerToScoring),
+                follow(follower, autoPositions.park1)
+                );
+
+        Command startSequence = sequential(
                 instant(() -> robot.ballsShoot()),
-                waitMs(1000),
+                waitMs(2000),
                 instant(() -> robot.ballsStop()),
-                checkhiveposition2,
                 waitMs(1000)
         );
         EnumMap<CameraFunctions.HivePosition, Command> hiveCases1 = new EnumMap<>(Map.of(
-                CameraFunctions.HivePosition.NA, waitMs(5000),
-                CameraFunctions.HivePosition.AUDIENCE, firstSequence,
-                CameraFunctions.HivePosition.SCORING, waitMs(5000)
+                CameraFunctions.HivePosition.NA, parkSequence,
+                CameraFunctions.HivePosition.AUDIENCE, startSequence,
+                CameraFunctions.HivePosition.SCORING, parkSequence
         ));
         Command checkhiveposition1 = match(() -> cameraFunctions.checkHivePosition(robot.teamColor), hiveCases1);
 
+        Command firstSequence = sequential(
+                follow(follower, autoPositions.waitToShoot),
+                race(
+                    AutoCommands.checkHivePosition(cameraFunctions,robot.teamColor, CameraFunctions.HivePosition.AUDIENCE),
+                    waitMs(5000)),
+                checkhiveposition1
+        );
 
-
-        follower.setPose(autoPositions.path1Start);
+        follower.setPose(autoPositions.path1StartOPP);
         follower.update();
         //firstSequence.schedule();
         schedule(firstSequence);
