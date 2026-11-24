@@ -15,7 +15,7 @@ public class Turret
     private HardwareMap hardwareMap;
 
     private double motorGear = 20.0;
-    private double turretGear = 30.0;
+    private double turretGear = 176.0;
 
     double turretTicksPerRev = 28.0; // Gobilda 5203 - 6000
     private double turretTargetPositionDegrees = 0.0;
