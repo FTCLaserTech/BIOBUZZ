@@ -27,6 +27,9 @@ public class AutoPositions
     public final Pose parkingPosition4;
     public final Pose flowerPickupOPP;
     public final Pose flowerPickupOPP2;
+    public final Pose corner1;
+    public final Pose corner2;
+
 
 
     public final Path moveToCornerFromScoringLaunch;
@@ -42,6 +45,11 @@ public class AutoPositions
     public final Path waitToShoot;
     public final Path moveFromOPPFlowerToOPPSide;
     public final Path shootOPP;
+    public final Path moveToFlowerFromOPP;
+    public final Path shootOPPFlower;
+    public final Path goToCorner;
+    public final Path moveFromCornerToFlower;
+
 
 
     public AutoPositions(PoseFactory poseFactory)
@@ -50,8 +58,8 @@ public class AutoPositions
         path1StartOPP = poseFactory.of(109, 10,0);
         scoringShootingPosition = poseFactory.of(110, 134, 45);
         cornerPickupPos3 = poseFactory.of(131, 137, 0);
-        point6 = poseFactory.of(108, 130, 90);
-        point7 = poseFactory.of(108, 21, 90);
+        point6 = poseFactory.of(108, 130, 270);
+        point7 = poseFactory.of(108, 21, 270);
         point9Shoot1 = poseFactory.of(82.0599, 10, 180);
         point9Shoot2 = poseFactory.of(82.0599, 10, 90);
         point10 = poseFactory.of(85, 10, 90);
@@ -63,6 +71,8 @@ public class AutoPositions
         parkingPosition2 = poseFactory.of(127,50,90);
         parkingPosition3 = poseFactory.of(94,33,45);
         parkingPosition4 = poseFactory.of(129,23,0);
+        corner1 = poseFactory.of(120,5,0);
+        corner2 = poseFactory.of(131,5,0);
 
 
 
@@ -75,8 +85,8 @@ public class AutoPositions
         reverseForUnderHive = Paths.line(path1Start, point6).linear(path1Start, point6); // turn around to reverse to the other side
         shootOnOppositeSide = Paths.line(point6, point7).linear(point6, point7); // Move to shooting zone on the other side
         goToOppositeFlower = Paths.path(
-                Paths.line(point7, point9Shoot1).linear(point7, point9Shoot1),// turn to flower to pick up
-                Paths.line(point7, point9Shoot2).linear(point7, point9Shoot2)); // turn to flower to pick up
+                Paths.line(point7, flowerPickupOPP2).linear(point7, flowerPickupOPP2));// turn to flower to pick up
+                //Paths.line(point7, point9Shoot2).linear(point7, point9Shoot2)); // turn to flower to pick up
         shootFlower = Paths.line(flowerPickupPos2, scoringShootingPosition).linear(flowerPickupPos2, scoringShootingPosition); // turn back to shoot pollen from the flower
         shootOnOppositeSide2 = Paths.line(flowerPickupPos2, point10).linear(flowerPickupPos2, point10); // turn back to shoot pollen from the flower
         waitToShoot = Paths.path(
@@ -88,6 +98,17 @@ public class AutoPositions
 
         shootOPP = Paths.path(
                 Paths.line(point6, scoringShootingPosition).linear(point6, scoringShootingPosition));
+
+        moveToFlowerFromOPP = Paths.path(
+                Paths.line(point7, flowerPickupPos2).linear(point7, flowerPickupPos2));
+
+        shootOPPFlower = Paths.path(
+                Paths.line(flowerPickupOPP2, point7).linear(flowerPickupOPP2, point7));
+        goToCorner = Paths.path(
+                Paths.curve(flowerPickupOPP2, corner1,corner2).linear(flowerPickupOPP2, corner2));
+
+        moveFromCornerToFlower = Paths.path(
+                Paths.line(corner2, flowerPickupPos2).linear(corner2, flowerPickupPos2));
 
         park1 = Paths.path(
                 Paths.line(scoringShootingPosition, parkingPosition1).linear(scoringShootingPosition, parkingPosition1),

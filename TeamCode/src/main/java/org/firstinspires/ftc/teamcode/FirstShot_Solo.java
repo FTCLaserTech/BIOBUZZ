@@ -100,20 +100,23 @@ public class FirstShot_Solo extends OpMode
                 follow(follower, autoPositions.shootFlower),
                 instant(() -> robot.ballsShoot()),
                 //extras.IntakeForward,
-                waitMs(2000),
-                instant(() -> robot.ballsStop())
+                waitMs(1000),
+                instant(() -> robot.ballsStop()),
+                follow(follower, autoPositions.park1)
                 );
 
         Command scoringShootOpposite = sequential(
                 follow(follower, autoPositions.shootOnOppositeSide),
                 instant(() -> robot.ballsShoot()),
                 //extras.IntakeForward,
-                waitMs(2000),
-                instant(() -> robot.ballsStop())
+                waitMs(1000),
+                instant(() -> robot.ballsStop()),
+                follow(follower, autoPositions.goToOppositeFlower),
+                instant(() -> robot.ballsShoot()),
+                waitMs(1000),
+                instant(() -> robot.ballsStop()),
+                follow(follower, autoPositions.park2)
                 );
-
-
-
 
                 EnumMap<CameraFunctions.HivePosition, Command> hiveCases2 = new EnumMap<>(Map.of(
                 CameraFunctions.HivePosition.NA, scoringShootOpposite,
@@ -124,29 +127,38 @@ public class FirstShot_Solo extends OpMode
 
         Command stayshoot = sequential(
                 instant(() -> robot.ballsShoot()),
-                //extras.IntakeForward,
-                waitMs(2000),
+                waitMs(1000),
                 instant(() -> robot.ballsStop()),
                 follow(follower, autoPositions.moveToFlower),
+                instant(() -> robot.ballsShoot()),
+                //extras.IntakeForward,
+                waitMs(1000),
+                instant(() -> robot.ballsStop()),
                 checkhiveposition2
                 );
 
         Command underHive = sequential(
-                waitMs(1000),
                 follow(follower, autoPositions.reverseForUnderHive),
-                waitMs(2000),
-                //extras.IntakeForward,
-                instant(() -> robot.ballsOuttake()),
+                waitMs(1000),
                 follow(follower, autoPositions.shootOnOppositeSide),
+                instant(() -> robot.ballsShoot()),
+                waitMs(1000),
                 instant(() -> robot.ballsStop()),
-                waitMs(2000),
                 follow(follower, autoPositions.goToOppositeFlower),
-                waitMs(2000),
+                instant(() -> robot.ballsShoot()),
+                waitMs(3000),
+                instant(() -> robot.ballsStop()),
+                follow(follower, autoPositions.moveToFlowerFromOPP),
+                instant(() -> robot.ballsShoot()),
+                waitMs(1000),
+                instant(() -> robot.ballsStop()),
                 follow(follower, autoPositions.shootFlower),
-                //follow(follower, path11),  //Put it back in
-                //follow(follower, path12) // put back in
-                instant(() -> robot.ballsStop())
-        );
+                instant(() -> robot.ballsShoot()),
+                waitMs(1000),
+                instant(() -> robot.ballsStop()),
+                follow(follower, autoPositions.park1)
+
+                );
 
         EnumMap<CameraFunctions.HivePosition, Command> hiveCases1 = new EnumMap<>(Map.of(
                 CameraFunctions.HivePosition.NA, underHive,
@@ -165,9 +177,7 @@ public class FirstShot_Solo extends OpMode
                 follow(follower, autoPositions.moveToCornerFromScoringLaunch),
                 waitMs(1000),
                 follow(follower, autoPositions.moveFromCornerToScoring),
-                waitMs(1000),
-                checkhiveposition1,
-                waitMs(1000)
+                checkhiveposition1
         );
 
 

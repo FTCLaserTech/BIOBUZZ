@@ -16,4 +16,5 @@ public class AutoCommands
                 //.setEnd(endCondition -> armMotor.setPower(0))
                 //.requiring(cameraFunctions);
     }
+
 }
